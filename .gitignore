@@ -2,6 +2,7 @@
 
 # Security Reports
 gitleaks-report.json
+bandit-report.json
 secretscanner-report.json
 trivy-sca-report.json
 zap-api-report.json
