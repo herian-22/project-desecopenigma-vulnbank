@@ -1,0 +1,1466 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2025-09-20T06:24:59.843850828+07:00",
+  "ArtifactName": "vuln-bank:dcae5d8b7f483929222110169e2e9e164c09fc2a",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 929358336,
+    "OS": {
+      "Family": "debian",
+      "Name": "13.1"
+    },
+    "ImageID": "sha256:cb42c13d88f4bbb8ff4165ce182507f8885d05b7eea61634f4c3ed17e6744dd5",
+    "DiffIDs": [
+      "sha256:daf557c4f08e0cb77b2af2a08d8bca4f333cf408d88191911715e6f393eca215",
+      "sha256:7f8ed22eec177761e1f6136d8231ea7690ee6862a9348a2cbd8a93db353ef268",
+      "sha256:23bfc63bbf7d3f76cb0ed0b78d6e6767cf4803b063af04fd460eb28156e9fa7e",
+      "sha256:dedcbc7d92532c6797b0011b53f2f0989a9a02fc763918d9afa6089b222e5ff6",
+      "sha256:9098e3c95de4f6d826f36b2e0fed10ce16ec3131acbf60f7ed3faa668b0e9acb",
+      "sha256:87949917c8affe472e602e3573949e20f6e8d4aad1fe6b6c2c6ed77984d22dd3",
+      "sha256:9d52f63316bfe8b69e272ccd046940c3ae7370e41e1801e81690f2761e7dc342",
+      "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318",
+      "sha256:dc612e9083b858d5a70615db14e6b640e9f48f6e8c5894843e286374730f684a",
+      "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+      "sha256:3413c59723ea836998091b56d15ff886425b92362aa91cd823620eb9b004f9fe"
+    ],
+    "RepoTags": [
+      "vuln-bank:dcae5d8b7f483929222110169e2e9e164c09fc2a"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "b8a96b69b607d306706c4f822820efb7bb9d89e03e7b08c3f6f53b0d77111660",
+      "created": "2025-09-19T23:22:45.744362796Z",
+      "docker_version": "28.4.0",
+      "history": [
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "# debian.sh --arch 'amd64' out/ 'trixie' '@1757289600'",
+          "comment": "debuerreotype 0.16"
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "ENV PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "ENV LANG=C.UTF-8",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "RUN /bin/sh -c set -eux; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tca-certificates \t\tnetbase \t\ttzdata \t; \tapt-get dist-clean # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "ENV GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "ENV PYTHON_VERSION=3.9.23",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "ENV PYTHON_SHA256=61a42919e13d539f7673cf11d1c404380e28e540510860b9d242196e165709c9",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "RUN /bin/sh -c set -eux; \t\tsavedAptMark=\"$(apt-mark showmanual)\"; \tapt-get update; \tapt-get install -y --no-install-recommends \t\tdpkg-dev \t\tgcc \t\tgnupg \t\tlibbluetooth-dev \t\tlibbz2-dev \t\tlibc6-dev \t\tlibdb-dev \t\tlibffi-dev \t\tlibgdbm-dev \t\tliblzma-dev \t\tlibncursesw5-dev \t\tlibreadline-dev \t\tlibsqlite3-dev \t\tlibssl-dev \t\tmake \t\ttk-dev \t\tuuid-dev \t\twget \t\txz-utils \t\tzlib1g-dev \t; \t\twget -O python.tar.xz \"https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz\"; \techo \"$PYTHON_SHA256 *python.tar.xz\" | sha256sum -c -; \twget -O python.tar.xz.asc \"https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc\"; \tGNUPGHOME=\"$(mktemp -d)\"; export GNUPGHOME; \tgpg --batch --keyserver hkps://keys.openpgp.org --recv-keys \"$GPG_KEY\"; \tgpg --batch --verify python.tar.xz.asc python.tar.xz; \tgpgconf --kill all; \trm -rf \"$GNUPGHOME\" python.tar.xz.asc; \tmkdir -p /usr/src/python; \ttar --extract --directory /usr/src/python --strip-components=1 --file python.tar.xz; \trm python.tar.xz; \t\tcd /usr/src/python; \tgnuArch=\"$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)\"; \t./configure \t\t--build=\"$gnuArch\" \t\t--enable-loadable-sqlite-extensions \t\t--enable-optimizations \t\t--enable-option-checking=fatal \t\t--enable-shared \t\t--with-ensurepip \t; \tnproc=\"$(nproc)\"; \tEXTRA_CFLAGS=\"$(dpkg-buildflags --get CFLAGS)\"; \tLDFLAGS=\"$(dpkg-buildflags --get LDFLAGS)\"; \tLDFLAGS=\"${LDFLAGS:--Wl},--strip-all\"; \tmake -j \"$nproc\" \t\t\"EXTRA_CFLAGS=${EXTRA_CFLAGS:-}\" \t\t\"LDFLAGS=${LDFLAGS:-}\" \t; \trm python; \tmake -j \"$nproc\" \t\t\"EXTRA_CFLAGS=${EXTRA_CFLAGS:-}\" \t\t\"LDFLAGS=${LDFLAGS:--Wl},-rpath='\\$\\$ORIGIN/../lib'\" \t\tpython \t; \tmake install; \t\tcd /; \trm -rf /usr/src/python; \t\tfind /usr/local -depth \t\t\\( \t\t\t\\( -type d -a \\( -name test -o -name tests -o -name idle_test \\) \\) \t\t\t-o \\( -type f -a \\( -name '*.pyc' -o -name '*.pyo' -o -name 'libpython*.a' \\) \\) \t\t\\) -exec rm -rf '{}' + \t; \t\tldconfig; \t\tapt-mark auto '.*' \u003e /dev/null; \tapt-mark manual $savedAptMark; \tfind /usr/local -type f -executable -not \\( -name '*tkinter*' \\) -exec ldd '{}' ';' \t\t| awk '/=\u003e/ { so = $(NF-1); if (index(so, \"/usr/local/\") == 1) { next }; gsub(\"^/(usr/)?\", \"\", so); printf \"*%s\\n\", so }' \t\t| sort -u \t\t| xargs -rt dpkg-query --search \t\t| awk 'sub(\":$\", \"\", $1) { print $1 }' \t\t| sort -u \t\t| xargs -r apt-mark manual \t; \tapt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \tapt-get dist-clean; \t\texport PYTHONDONTWRITEBYTECODE=1; \tpython3 --version; \t\tpip3 install \t\t--disable-pip-version-check \t\t--no-cache-dir \t\t--no-compile \t\t'setuptools==58.1.0' \t\t'wheel\u003c0.46' \t; \tpip3 --version # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "RUN /bin/sh -c set -eux; \tfor src in idle3 pip3 pydoc3 python3 python3-config; do \t\tdst=\"$(echo \"$src\" | tr -d 3)\"; \t\t[ -s \"/usr/local/bin/$src\" ]; \t\t[ ! -e \"/usr/local/bin/$dst\" ]; \t\tln -svT \"$src\" \"/usr/local/bin/$dst\"; \tdone # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2025-08-08T18:20:34Z",
+          "created_by": "CMD [\"python3\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-09-19T23:19:33.987804162Z",
+          "created_by": "/bin/sh -c apt-get update \u0026\u0026 apt-get install -y     postgresql-client     \u0026\u0026 rm -rf /var/lib/apt/lists/*"
+        },
+        {
+          "created": "2025-09-19T23:19:34.2128582Z",
+          "created_by": "/bin/sh -c #(nop) WORKDIR /app"
+        },
+        {
+          "created": "2025-09-19T23:19:34.263884441Z",
+          "created_by": "/bin/sh -c #(nop) COPY file:38b623d3a5bb82c8a3ed22c0e0e3f1da5606d8f9a0df240d2146f115f37c5d45 in . "
+        },
+        {
+          "created": "2025-09-19T23:19:54.173496329Z",
+          "created_by": "/bin/sh -c pip install --no-cache-dir -r requirements.txt"
+        },
+        {
+          "created": "2025-09-19T23:19:54.636435014Z",
+          "created_by": "/bin/sh -c mkdir -p static/uploads templates"
+        },
+        {
+          "created": "2025-09-19T23:22:44.700539353Z",
+          "created_by": "/bin/sh -c #(nop) COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+        },
+        {
+          "created": "2025-09-19T23:22:45.606783268Z",
+          "created_by": "/bin/sh -c chmod 777 static/uploads"
+        },
+        {
+          "created": "2025-09-19T23:22:45.675072422Z",
+          "created_by": "/bin/sh -c #(nop)  EXPOSE 5000",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-09-19T23:22:45.744362796Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"python\" \"app.py\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:daf557c4f08e0cb77b2af2a08d8bca4f333cf408d88191911715e6f393eca215",
+          "sha256:7f8ed22eec177761e1f6136d8231ea7690ee6862a9348a2cbd8a93db353ef268",
+          "sha256:23bfc63bbf7d3f76cb0ed0b78d6e6767cf4803b063af04fd460eb28156e9fa7e",
+          "sha256:dedcbc7d92532c6797b0011b53f2f0989a9a02fc763918d9afa6089b222e5ff6",
+          "sha256:9098e3c95de4f6d826f36b2e0fed10ce16ec3131acbf60f7ed3faa668b0e9acb",
+          "sha256:87949917c8affe472e602e3573949e20f6e8d4aad1fe6b6c2c6ed77984d22dd3",
+          "sha256:9d52f63316bfe8b69e272ccd046940c3ae7370e41e1801e81690f2761e7dc342",
+          "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318",
+          "sha256:dc612e9083b858d5a70615db14e6b640e9f48f6e8c5894843e286374730f684a",
+          "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+          "sha256:3413c59723ea836998091b56d15ff886425b92362aa91cd823620eb9b004f9fe"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "python",
+          "app.py"
+        ],
+        "Env": [
+          "PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "LANG=C.UTF-8",
+          "GPG_KEY=E3FF2839C048B25C084DEBE9B26995E310250568",
+          "PYTHON_VERSION=3.9.23",
+          "PYTHON_SHA256=61a42919e13d539f7673cf11d1c404380e28e540510860b9d242196e165709c9"
+        ],
+        "Image": "sha256:78fe6f5e963ba83bd77ffc8945208cfc436c0a77c7423de948b77cde099703cf",
+        "WorkingDir": "/app",
+        "ExposedPorts": {
+          "5000/tcp": {}
+        }
+      }
+    },
+    "Layers": [
+      {
+        "Size": 81039360,
+        "DiffID": "sha256:daf557c4f08e0cb77b2af2a08d8bca4f333cf408d88191911715e6f393eca215"
+      },
+      {
+        "Size": 4123136,
+        "DiffID": "sha256:7f8ed22eec177761e1f6136d8231ea7690ee6862a9348a2cbd8a93db353ef268"
+      },
+      {
+        "Size": 39578112,
+        "DiffID": "sha256:23bfc63bbf7d3f76cb0ed0b78d6e6767cf4803b063af04fd460eb28156e9fa7e"
+      },
+      {
+        "Size": 5120,
+        "DiffID": "sha256:dedcbc7d92532c6797b0011b53f2f0989a9a02fc763918d9afa6089b222e5ff6"
+      },
+      {
+        "Size": 61761024,
+        "DiffID": "sha256:9098e3c95de4f6d826f36b2e0fed10ce16ec3131acbf60f7ed3faa668b0e9acb"
+      },
+      {
+        "Size": 1536,
+        "DiffID": "sha256:87949917c8affe472e602e3573949e20f6e8d4aad1fe6b6c2c6ed77984d22dd3"
+      },
+      {
+        "Size": 2560,
+        "DiffID": "sha256:9d52f63316bfe8b69e272ccd046940c3ae7370e41e1801e81690f2761e7dc342"
+      },
+      {
+        "Size": 26469376,
+        "DiffID": "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318"
+      },
+      {
+        "Size": 3072,
+        "DiffID": "sha256:dc612e9083b858d5a70615db14e6b640e9f48f6e8c5894843e286374730f684a"
+      },
+      {
+        "Size": 716372480,
+        "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889"
+      },
+      {
+        "Size": 2560,
+        "DiffID": "sha256:3413c59723ea836998091b56d15ff886425b92362aa91cd823620eb9b004f9fe"
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Target": "vuln-bank:dcae5d8b7f483929222110169e2e9e164c09fc2a (debian 13.1)",
+      "Class": "os-pkgs",
+      "Type": "debian"
+    },
+    {
+      "Target": "Python",
+      "Class": "lang-pkgs",
+      "Type": "python-pkg",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2023-30861",
+          "PkgName": "Flask",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/Flask-2.0.1.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/flask@2.0.1",
+            "UID": "c9b54ce773c9b947"
+          },
+          "InstalledVersion": "2.0.1",
+          "FixedVersion": "2.3.2, 2.2.5",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-30861",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "flask: Possible disclosure of permanent session cookie due to missing Vary: Cookie header",
+          "Description": "Flask is a lightweight WSGI web application framework. When all of the following conditions are met, a response containing data intended for one client may be cached and subsequently sent by the proxy to other clients. If the proxy also caches `Set-Cookie` headers, it may send one client's `session` cookie to other clients. The severity depends on the application's use of the session and the proxy's behavior regarding cookies. The risk depends on all these conditions being met.\n\n1. The application must be hosted behind a caching proxy that does not strip cookies or ignore responses with cookies.\n2. The application sets `session.permanent = True`\n3. The application does not access or modify the session at any point during a request.\n4. `SESSION_REFRESH_EACH_REQUEST` enabled (the default).\n5. The application does not set a `Cache-Control` header to indicate that a page is private or should not be cached.\n\nThis happens because vulnerable versions of Flask only set the `Vary: Cookie` header when the session is accessed or modified, not when it is refreshed (re-sent to update the expiration) without being accessed or modified. This issue has been fixed in versions 2.3.2 and 2.2.5.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-539"
+          ],
+          "VendorSeverity": {
+            "amazon": 3,
+            "ghsa": 3,
+            "nvd": 3,
+            "oracle-oval": 3,
+            "redhat": 3,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2023-30861",
+            "https://github.com/pallets/flask",
+            "https://github.com/pallets/flask/commit/70f906c51ce49c485f1d355703e9cc3386b1cc2b",
+            "https://github.com/pallets/flask/commit/8646edca6f47e2cd57464081b3911218d4734f8d (2.2.5)",
+            "https://github.com/pallets/flask/commit/8705dd39c4fa563ea0fe0bf84c85da8fcc98b88d (2.3.2)",
+            "https://github.com/pallets/flask/commit/afd63b16170b7c047f5758eb910c416511e9c965",
+            "https://github.com/pallets/flask/releases/tag/2.2.5",
+            "https://github.com/pallets/flask/releases/tag/2.3.2",
+            "https://github.com/pallets/flask/security/advisories/GHSA-m2qf-hxjv-5gpq",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/flask/PYSEC-2023-62.yaml",
+            "https://linux.oracle.com/cve/CVE-2023-30861.html",
+            "https://linux.oracle.com/errata/ELSA-2023-12710.html",
+            "https://lists.debian.org/debian-lts-announce/2023/08/msg00024.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-30861",
+            "https://security.netapp.com/advisory/ntap-20230818-0006",
+            "https://security.netapp.com/advisory/ntap-20230818-0006/",
+            "https://ubuntu.com/security/notices/USN-6111-1",
+            "https://www.cve.org/CVERecord?id=CVE-2023-30861",
+            "https://www.debian.org/security/2023/dsa-5442"
+          ],
+          "PublishedDate": "2023-05-02T18:15:52.373Z",
+          "LastModifiedDate": "2024-11-21T08:00:59.623Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2024-6221",
+          "PkgName": "Flask-Cors",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/Flask_Cors-4.0.0.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/flask-cors@4.0.0",
+            "UID": "4675de7d09c2fac3"
+          },
+          "InstalledVersion": "4.0.0",
+          "FixedVersion": "4.0.2",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-6221",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "A vulnerability in corydolphin/flask-cors version 4.0.1 allows the `Ac ...",
+          "Description": "A vulnerability in corydolphin/flask-cors version 4.0.1 allows the `Access-Control-Allow-Private-Network` CORS header to be set to true by default. This behavior can expose private network resources to unauthorized external access, leading to significant security risks such as data breaches, unauthorized access to sensitive information, and potential network intrusions.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-284"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/corydolphin/flask-cors",
+            "https://github.com/corydolphin/flask-cors/commit/03aa3f8e2256437f7bad96422a747b98ab5e31bf",
+            "https://github.com/corydolphin/flask-cors/commit/7ae310c56ac30e0b94fb42129aa377bf633256ec",
+            "https://github.com/corydolphin/flask-cors/commit/c8514760cf03fcce16d77f6db7007aad429c4548",
+            "https://github.com/corydolphin/flask-cors/issues/362",
+            "https://github.com/corydolphin/flask-cors/pull/363",
+            "https://github.com/corydolphin/flask-cors/pull/368",
+            "https://github.com/corydolphin/flask-cors/releases",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/flask-cors/PYSEC-2024-71.yaml",
+            "https://huntr.com/bounties/a42935fc-6f57-4818-bca4-3d528235df4d",
+            "https://nvd.nist.gov/vuln/detail/CVE-2024-6221",
+            "https://ubuntu.com/security/notices/USN-7612-1",
+            "https://www.cve.org/CVERecord?id=CVE-2024-6221"
+          ],
+          "PublishedDate": "2024-08-18T19:15:04.73Z",
+          "LastModifiedDate": "2025-04-07T15:15:42.06Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2022-24439",
+          "PkgName": "GitPython",
+          "PkgPath": "app/env/lib/python3.12/site-packages/GitPython-3.0.6.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.0.6",
+            "UID": "31b05ee51985bcae"
+          },
+          "InstalledVersion": "3.0.6",
+          "FixedVersion": "3.1.30",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24439",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "GitPython: improper user input validation leads into a RCE",
+          "Description": "All versions of package gitpython are vulnerable to Remote Code Execution (RCE) due to improper user input validation, which makes it possible to inject a maliciously crafted remote URL into the clone command. Exploiting this vulnerability is possible because the library makes external calls to git without sufficient sanitization of input arguments.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "VendorSeverity": {
+            "ghsa": 4,
+            "nvd": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.1
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2022-24439",
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/blob/bec61576ae75803bc4e60d8de7a629c194313d1c/git/repo/base.py#L1249",
+            "https://github.com/gitpython-developers/GitPython/blob/bec61576ae75803bc4e60d8de7a629c194313d1c/git/repo/base.py%23L1249",
+            "https://github.com/gitpython-developers/GitPython/commit/2625ed9fc074091c531c27ffcba7902771130261",
+            "https://github.com/gitpython-developers/GitPython/issues/1515",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.30",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/gitpython/PYSEC-2022-42992.yaml",
+            "https://lists.debian.org/debian-lts-announce/2023/07/msg00024.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/AV5DV7GBLMOZT7U3Q4TDOJO5R6G3V6GH",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/AV5DV7GBLMOZT7U3Q4TDOJO5R6G3V6GH/",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/IKMVYKLWX62UEYKAN64RUZMOIAMZM5JN",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/IKMVYKLWX62UEYKAN64RUZMOIAMZM5JN/",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/PF6AXUTC5BO7L2SBJMCVKJSPKWY52I5R",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/PF6AXUTC5BO7L2SBJMCVKJSPKWY52I5R/",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/SJHN3QUXPJIMM6SULIR3PR34UFWRAE7X",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/SJHN3QUXPJIMM6SULIR3PR34UFWRAE7X/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AV5DV7GBLMOZT7U3Q4TDOJO5R6G3V6GH",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/IKMVYKLWX62UEYKAN64RUZMOIAMZM5JN",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/PF6AXUTC5BO7L2SBJMCVKJSPKWY52I5R",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/SJHN3QUXPJIMM6SULIR3PR34UFWRAE7X",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-24439",
+            "https://security.gentoo.org/glsa/202311-01",
+            "https://security.snyk.io/vuln/SNYK-PYTHON-GITPYTHON-3113858",
+            "https://ubuntu.com/security/notices/USN-5968-1",
+            "https://www.cve.org/CVERecord?id=CVE-2022-24439"
+          ],
+          "PublishedDate": "2022-12-06T05:15:11.42Z",
+          "LastModifiedDate": "2024-11-21T06:50:25.3Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-40267",
+          "PkgName": "GitPython",
+          "PkgPath": "app/env/lib/python3.12/site-packages/GitPython-3.0.6.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.0.6",
+            "UID": "31b05ee51985bcae"
+          },
+          "InstalledVersion": "3.0.6",
+          "FixedVersion": "3.1.32",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-40267",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "GitPython: Insecure non-multi options in clone and clone_from is not blocked",
+          "Description": "GitPython before 3.1.32 does not block insecure non-multi options in clone and clone_from. NOTE: this issue exists because of an incomplete fix for CVE-2022-24439.",
+          "Severity": "CRITICAL",
+          "VendorSeverity": {
+            "ghsa": 4,
+            "nvd": 4,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2023-40267",
+            "https://github.com/advisories/GHSA-pr76-5cm5-w9cj",
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/5c59e0d63da6180db8a0b349f0ad36fef42aceed (3.1.32)",
+            "https://github.com/gitpython-developers/GitPython/commit/ca965ecc81853bca7675261729143f54e5bf4cdd",
+            "https://github.com/gitpython-developers/GitPython/pull/1609",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/gitpython/PYSEC-2023-137.yaml",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/AV5DV7GBLMOZT7U3Q4TDOJO5R6G3V6GH/",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/PF6AXUTC5BO7L2SBJMCVKJSPKWY52I5R/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/AV5DV7GBLMOZT7U3Q4TDOJO5R6G3V6GH",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/PF6AXUTC5BO7L2SBJMCVKJSPKWY52I5R",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-40267",
+            "https://ubuntu.com/security/notices/USN-6326-1",
+            "https://www.cve.org/CVERecord?id=CVE-2023-40267"
+          ],
+          "PublishedDate": "2023-08-11T07:15:09.647Z",
+          "LastModifiedDate": "2024-11-21T08:19:05.497Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-40590",
+          "PkgName": "GitPython",
+          "PkgPath": "app/env/lib/python3.12/site-packages/GitPython-3.0.6.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.0.6",
+            "UID": "31b05ee51985bcae"
+          },
+          "InstalledVersion": "3.0.6",
+          "FixedVersion": "3.1.33",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-40590",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "gitpython: improper executable lookup on windows",
+          "Description": " GitPython is a python library used to interact with Git repositories. When resolving a program, Python/Windows look for the current working directory, and after that the PATH environment. GitPython defaults to use the `git` command, if a user runs GitPython from a repo has a `git.exe` or `git` executable, that program will be run instead of the one in the user's `PATH`. This is more of a problem on how Python interacts with Windows systems, Linux and any other OS aren't affected by this. But probably people using GitPython usually run it from the CWD of a repo. An attacker can trick a user to download a repository with a malicious `git` executable, if the user runs/imports GitPython from that directory, it allows the attacker to run any arbitrary commands. There is no fix currently available for windows users, however there are a few mitigations. 1: Default to an absolute path for the git program on Windows, like `C:\\\\Program Files\\\\Git\\\\cmd\\\\git.EXE` (default git path installation). 2: Require users to set the `GIT_PYTHON_GIT_EXECUTABLE` environment variable on Windows systems. 3: Make this problem prominent in the documentation and advise users to never run GitPython from an untrusted repo, or set the `GIT_PYTHON_GIT_EXECUTABLE` env var to an absolute path. 4: Resolve the executable manually by only looking into the `PATH` environment variable.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-426"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2023-40590",
+            "https://docs.python.org/3/library/subprocess.html#popen-constructor",
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/8b75434e2c8a082cdeb4971cc6f0ee2bafec45bc",
+            "https://github.com/gitpython-developers/GitPython/issues/1635",
+            "https://github.com/gitpython-developers/GitPython/pull/1636",
+            "https://github.com/gitpython-developers/GitPython/releases/tag/3.1.33",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-wfm5-v35h-vwf4",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/gitpython/PYSEC-2023-161.yaml",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-40590",
+            "https://www.cve.org/CVERecord?id=CVE-2023-40590"
+          ],
+          "PublishedDate": "2023-08-28T18:15:08.937Z",
+          "LastModifiedDate": "2024-11-21T08:19:46.723Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2024-22190",
+          "PkgName": "GitPython",
+          "PkgPath": "app/env/lib/python3.12/site-packages/GitPython-3.0.6.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/gitpython@3.0.6",
+            "UID": "31b05ee51985bcae"
+          },
+          "InstalledVersion": "3.0.6",
+          "FixedVersion": "3.1.41",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-22190",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "Untrusted search path under some conditions on Windows allows arbitrary code execution",
+          "Description": "GitPython is a python library used to interact with Git repositories. There is an incomplete fix for CVE-2023-40590. On Windows, GitPython uses an untrusted search path if it uses a shell to run `git`, as well as when it runs `bash.exe` to interpret hooks. If either of those features are used on Windows, a malicious `git.exe` or `bash.exe` may be run from an untrusted repository. This issue has been patched in version 3.1.41.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-426"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.8
+            }
+          },
+          "References": [
+            "https://github.com/gitpython-developers/GitPython",
+            "https://github.com/gitpython-developers/GitPython/commit/ef3192cc414f2fd9978908454f6fd95243784c7f",
+            "https://github.com/gitpython-developers/GitPython/pull/1792",
+            "https://github.com/gitpython-developers/GitPython/security/advisories/GHSA-2mqj-m65w-jghx",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/gitpython/PYSEC-2024-4.yaml",
+            "https://nvd.nist.gov/vuln/detail/CVE-2024-22190"
+          ],
+          "PublishedDate": "2024-01-11T02:15:48.25Z",
+          "LastModifiedDate": "2024-11-21T08:55:45.66Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2023-25577",
+          "PkgName": "Werkzeug",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/Werkzeug-2.0.1.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@2.0.1",
+            "UID": "229f5b3a4ff5323e"
+          },
+          "InstalledVersion": "2.0.1",
+          "FixedVersion": "2.2.3",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2023-25577",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "python-werkzeug: high resource usage when parsing multipart form data with many fields",
+          "Description": "Werkzeug is a comprehensive WSGI web application library. Prior to version 2.2.3, Werkzeug's multipart form data parser will parse an unlimited number of parts, including file parts. Parts can be a small amount of bytes, but each requires CPU time to parse and may use more memory as Python data. If a request can be made to an endpoint that accesses `request.data`, `request.form`, `request.files`, or `request.get_data(parse_form_data=False)`, it can cause unexpectedly high resource usage. This allows an attacker to cause a denial of service by sending crafted multipart data to an endpoint that will parse it. The amount of CPU time required can block worker processes from handling legitimate requests. The amount of RAM required can trigger an out of memory kill of the process. Unlimited file parts can use up memory and file handles. If many concurrent requests are sent continuously, this can exhaust or kill all available workers. Version 2.2.3 contains a patch for this issue.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-770"
+          ],
+          "VendorSeverity": {
+            "amazon": 3,
+            "cbl-mariner": 3,
+            "ghsa": 3,
+            "nvd": 3,
+            "oracle-oval": 1,
+            "photon": 3,
+            "redhat": 3,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2023-25577",
+            "https://github.com/pallets/werkzeug",
+            "https://github.com/pallets/werkzeug/commit/517cac5a804e8c4dc4ed038bb20dacd038e7a9f1",
+            "https://github.com/pallets/werkzeug/releases/tag/2.2.3",
+            "https://github.com/pallets/werkzeug/security/advisories/GHSA-xg9f-g7g7-2323",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/werkzeug/PYSEC-2023-58.yaml",
+            "https://linux.oracle.com/cve/CVE-2023-25577.html",
+            "https://linux.oracle.com/errata/ELSA-2023-12709.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2023-25577",
+            "https://security.netapp.com/advisory/ntap-20230818-0003",
+            "https://security.netapp.com/advisory/ntap-20230818-0003/",
+            "https://ubuntu.com/security/notices/USN-5948-1",
+            "https://ubuntu.com/security/notices/USN-5948-2",
+            "https://www.cve.org/CVERecord?id=CVE-2023-25577",
+            "https://www.debian.org/security/2023/dsa-5470"
+          ],
+          "PublishedDate": "2023-02-14T20:15:17.543Z",
+          "LastModifiedDate": "2024-11-21T07:49:45.74Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2024-34069",
+          "PkgName": "Werkzeug",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/Werkzeug-2.0.1.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@2.0.1",
+            "UID": "229f5b3a4ff5323e"
+          },
+          "InstalledVersion": "2.0.1",
+          "FixedVersion": "3.0.3",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:f697ede5ae75df10d532074955833f7ae1f2b2347038d083e061a7ac02247318"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-34069",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "python-werkzeug: user may execute code on a developer's machine",
+          "Description": "Werkzeug is a comprehensive WSGI web application library. The debugger in affected versions of Werkzeug can allow an attacker to execute code on a developer's machine under some circumstances. This requires the attacker to get the developer to interact with a domain and subdomain they control, and enter the debugger PIN, but if they are successful it allows access to the debugger even if it is only running on localhost. This also requires the attacker to guess a URL in the developer's application that will trigger the debugger. This vulnerability is fixed in 3.0.3.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-352"
+          ],
+          "VendorSeverity": {
+            "amazon": 3,
+            "azure": 3,
+            "cbl-mariner": 3,
+            "ghsa": 3,
+            "photon": 3,
+            "redhat": 3,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2024-34069",
+            "https://github.com/pallets/werkzeug",
+            "https://github.com/pallets/werkzeug/commit/3386395b24c7371db11a5b8eaac0c91da5362692",
+            "https://github.com/pallets/werkzeug/security/advisories/GHSA-2g68-c3qc-8985",
+            "https://lists.debian.org/debian-lts-announce/2025/02/msg00026.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/H4SH32AM3CTPMAAEOIDAN7VU565LO4IR",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/H4SH32AM3CTPMAAEOIDAN7VU565LO4IR/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HFERFN7PINV4MOGMGA3DPIXJPDCYOEJZ",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/HFERFN7PINV4MOGMGA3DPIXJPDCYOEJZ/",
+            "https://nvd.nist.gov/vuln/detail/CVE-2024-34069",
+            "https://security.netapp.com/advisory/ntap-20240614-0004",
+            "https://security.netapp.com/advisory/ntap-20240614-0004/",
+            "https://ubuntu.com/security/notices/USN-6799-1",
+            "https://www.cve.org/CVERecord?id=CVE-2024-34069"
+          ],
+          "PublishedDate": "2024-05-06T15:15:23.99Z",
+          "LastModifiedDate": "2025-02-21T18:15:16.663Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2022-40897",
+          "PkgName": "setuptools",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/setuptools-58.1.0.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/setuptools@58.1.0",
+            "UID": "a31a7b733078920c"
+          },
+          "InstalledVersion": "58.1.0",
+          "FixedVersion": "65.5.1",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:23bfc63bbf7d3f76cb0ed0b78d6e6767cf4803b063af04fd460eb28156e9fa7e"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-40897",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "pypa-setuptools: Regular Expression Denial of Service (ReDoS) in package_index.py",
+          "Description": "Python Packaging Authority (PyPA) setuptools before 65.5.1 allows remote attackers to cause a denial of service via HTML in a crafted package or custom PackageIndex page. There is a Regular Expression Denial of Service (ReDoS) in package_index.py.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-1333"
+          ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 2,
+            "bitnami": 2,
+            "cbl-mariner": 2,
+            "ghsa": 3,
+            "nvd": 2,
+            "oracle-oval": 2,
+            "photon": 2,
+            "redhat": 2,
+            "rocky": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "bitnami": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            },
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            },
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 5.9
+            }
+          },
+          "References": [
+            "https://access.redhat.com/errata/RHSA-2023:0952",
+            "https://access.redhat.com/security/cve/CVE-2022-40897",
+            "https://bugzilla.redhat.com/2158559",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2158559",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2022-40897",
+            "https://errata.almalinux.org/9/ALSA-2023-0952.html",
+            "https://errata.rockylinux.org/RLSA-2023:0952",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/setuptools/PYSEC-2022-43012.yaml",
+            "https://github.com/pypa/setuptools",
+            "https://github.com/pypa/setuptools/blob/fe8a98e696241487ba6ac9f91faa38ade939ec5d/setuptools/package_index.py#L200",
+            "https://github.com/pypa/setuptools/commit/43a9c9bfa6aa626ec2a22540bea28d2ca77964be",
+            "https://github.com/pypa/setuptools/compare/v65.5.0...v65.5.1",
+            "https://github.com/pypa/setuptools/issues/3659",
+            "https://linux.oracle.com/cve/CVE-2022-40897.html",
+            "https://linux.oracle.com/errata/ELSA-2024-2987.html",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ADES3NLOE5QJKBLGNZNI2RGVOSQXA37R",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/ADES3NLOE5QJKBLGNZNI2RGVOSQXA37R/",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/YNA2BAH2ACBZ4TVJZKFLCR7L23BG5C3H",
+            "https://lists.fedoraproject.org/archives/list/package-announce%40lists.fedoraproject.org/message/YNA2BAH2ACBZ4TVJZKFLCR7L23BG5C3H/",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/ADES3NLOE5QJKBLGNZNI2RGVOSQXA37R",
+            "https://lists.fedoraproject.org/archives/list/package-announce@lists.fedoraproject.org/message/YNA2BAH2ACBZ4TVJZKFLCR7L23BG5C3H",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-40897",
+            "https://pyup.io/posts/pyup-discovers-redos-vulnerabilities-in-top-python-packages",
+            "https://pyup.io/posts/pyup-discovers-redos-vulnerabilities-in-top-python-packages/",
+            "https://pyup.io/vulnerabilities/CVE-2022-40897/52495",
+            "https://pyup.io/vulnerabilities/CVE-2022-40897/52495/",
+            "https://security.netapp.com/advisory/ntap-20230214-0001",
+            "https://security.netapp.com/advisory/ntap-20230214-0001/",
+            "https://security.netapp.com/advisory/ntap-20240621-0006",
+            "https://security.netapp.com/advisory/ntap-20240621-0006/",
+            "https://setuptools.pypa.io/en/latest",
+            "https://ubuntu.com/security/notices/USN-5817-1",
+            "https://www.cve.org/CVERecord?id=CVE-2022-40897"
+          ],
+          "PublishedDate": "2022-12-23T00:15:13.987Z",
+          "LastModifiedDate": "2024-11-21T07:22:13.787Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2024-6345",
+          "PkgName": "setuptools",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/setuptools-58.1.0.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/setuptools@58.1.0",
+            "UID": "a31a7b733078920c"
+          },
+          "InstalledVersion": "58.1.0",
+          "FixedVersion": "70.0.0",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:23bfc63bbf7d3f76cb0ed0b78d6e6767cf4803b063af04fd460eb28156e9fa7e"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2024-6345",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "pypa/setuptools: Remote code execution via download functions in the package_index module in pypa/setuptools",
+          "Description": "A vulnerability in the package_index module of pypa/setuptools versions up to 69.1.1 allows for remote code execution via its download functions. These functions, which are used to download packages from URLs provided by users or retrieved from package index servers, are susceptible to code injection. If these functions are exposed to user-controlled inputs, such as package URLs, they can execute arbitrary commands on the system. The issue is fixed in version 70.0.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-94"
+          ],
+          "VendorSeverity": {
+            "alma": 3,
+            "amazon": 3,
+            "azure": 3,
+            "bitnami": 3,
+            "cbl-mariner": 3,
+            "ghsa": 3,
+            "oracle-oval": 3,
+            "photon": 3,
+            "redhat": 3,
+            "rocky": 3,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "bitnami": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 8.8
+            },
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 8.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H",
+              "V3Score": 8.8
+            }
+          },
+          "References": [
+            "https://access.redhat.com/errata/RHSA-2024:6726",
+            "https://access.redhat.com/security/cve/CVE-2024-6345",
+            "https://bugzilla.redhat.com/2297771",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2297771",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-6345",
+            "https://errata.almalinux.org/9/ALSA-2024-6726.html",
+            "https://errata.rockylinux.org/RLSA-2024:6726",
+            "https://github.com/pypa/setuptools",
+            "https://github.com/pypa/setuptools/commit/88807c7062788254f654ea8c03427adc859321f0",
+            "https://github.com/pypa/setuptools/pull/4332",
+            "https://huntr.com/bounties/d6362117-ad57-4e83-951f-b8141c6e7ca5",
+            "https://linux.oracle.com/cve/CVE-2024-6345.html",
+            "https://linux.oracle.com/errata/ELSA-2024-6726.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2024-6345",
+            "https://ubuntu.com/security/notices/USN-7002-1",
+            "https://www.cve.org/CVERecord?id=CVE-2024-6345"
+          ],
+          "PublishedDate": "2024-07-15T01:15:01.73Z",
+          "LastModifiedDate": "2024-11-21T09:49:28.17Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2025-47273",
+          "PkgName": "setuptools",
+          "PkgPath": "usr/local/lib/python3.9/site-packages/setuptools-58.1.0.dist-info/METADATA",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/setuptools@58.1.0",
+            "UID": "a31a7b733078920c"
+          },
+          "InstalledVersion": "58.1.0",
+          "FixedVersion": "78.1.1",
+          "Status": "fixed",
+          "Layer": {
+            "DiffID": "sha256:23bfc63bbf7d3f76cb0ed0b78d6e6767cf4803b063af04fd460eb28156e9fa7e"
+          },
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2025-47273",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Title": "setuptools: Path Traversal Vulnerability in setuptools PackageIndex",
+          "Description": "setuptools is a package that allows users to download, build, install, upgrade, and uninstall Python packages. A path traversal vulnerability in `PackageIndex` is present in setuptools prior to version 78.1.1. An attacker would be allowed to write files to arbitrary locations on the filesystem with the permissions of the process running the Python code, which could escalate to remote code execution depending on the context. Version 78.1.1 fixes the issue.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-22"
+          ],
+          "VendorSeverity": {
+            "alma": 2,
+            "amazon": 3,
+            "azure": 3,
+            "bitnami": 3,
+            "ghsa": 3,
+            "nvd": 3,
+            "oracle-oval": 2,
+            "photon": 3,
+            "redhat": 2,
+            "rocky": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+              "V3Score": 8.8
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:L",
+              "V3Score": 7.1
+            }
+          },
+          "References": [
+            "https://access.redhat.com/errata/RHSA-2025:13578",
+            "https://access.redhat.com/security/cve/CVE-2025-47273",
+            "https://bugzilla.redhat.com/2366982",
+            "https://bugzilla.redhat.com/show_bug.cgi?id=2366982",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2025-47273",
+            "https://errata.almalinux.org/9/ALSA-2025-13578.html",
+            "https://errata.rockylinux.org/RLSA-2025:11036",
+            "https://github.com/pypa/advisory-database/tree/main/vulns/setuptools/PYSEC-2025-49.yaml",
+            "https://github.com/pypa/setuptools",
+            "https://github.com/pypa/setuptools/blob/6ead555c5fb29bc57fe6105b1bffc163f56fd558/setuptools/package_index.py#L810C1-L825C88",
+            "https://github.com/pypa/setuptools/commit/250a6d17978f9f6ac3ac887091f2d32886fbbb0b",
+            "https://github.com/pypa/setuptools/issues/4946",
+            "https://github.com/pypa/setuptools/security/advisories/GHSA-5rjg-fvgr-3xxf",
+            "https://linux.oracle.com/cve/CVE-2025-47273.html",
+            "https://linux.oracle.com/errata/ELSA-2025-9940.html",
+            "https://lists.debian.org/debian-lts-announce/2025/05/msg00035.html",
+            "https://nvd.nist.gov/vuln/detail/CVE-2025-47273",
+            "https://ubuntu.com/security/notices/USN-7544-1",
+            "https://www.cve.org/CVERecord?id=CVE-2025-47273"
+          ],
+          "PublishedDate": "2025-05-17T16:15:19.11Z",
+          "LastModifiedDate": "2025-06-12T16:29:01.66Z"
+        }
+      ]
+    },
+    {
+      "Target": "/app/gitleaks-report.json",
+      "Class": "secret",
+      "Secrets": [
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 68,
+          "EndLine": 68,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 66,
+                "Content": "  \"StartColumn\": 27,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"StartColumn\": 27,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 67,
+                "Content": "  \"EndColumn\": 46,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 46,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 68,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 69,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Match\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 2452
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 69,
+          "EndLine": 69,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 67,
+                "Content": "  \"EndColumn\": 46,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 46,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 68,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 69,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 70,
+                "Content": "  \"File\": \"README.md\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"File\": \"README.md\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Secret\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 2488
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 88,
+          "EndLine": 88,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 86,
+                "Content": "  \"StartColumn\": 15,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"StartColumn\": 15,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 87,
+                "Content": "  \"EndColumn\": 34,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 34,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 88,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 89,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Match\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 3148
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 89,
+          "EndLine": 89,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 87,
+                "Content": "  \"EndColumn\": 34,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 34,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 88,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 89,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 90,
+                "Content": "  \"File\": \"README.md\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"File\": \"README.md\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Secret\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 3184
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 108,
+          "EndLine": 108,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 106,
+                "Content": "  \"StartColumn\": 33,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"StartColumn\": 33,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 107,
+                "Content": "  \"EndColumn\": 52,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 52,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 108,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 109,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Match\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 3844
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 109,
+          "EndLine": 109,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 107,
+                "Content": "  \"EndColumn\": 52,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 52,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 108,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 109,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 110,
+                "Content": "  \"File\": \"README.md\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"File\": \"README.md\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Secret\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 3880
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 208,
+          "EndLine": 208,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 206,
+                "Content": "  \"StartColumn\": 57,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"StartColumn\": 57,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 207,
+                "Content": "  \"EndColumn\": 76,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 76,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 208,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 209,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Match\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 8018
+        },
+        {
+          "RuleID": "aws-access-key-id",
+          "Category": "AWS",
+          "Severity": "CRITICAL",
+          "Title": "AWS Access Key ID",
+          "StartLine": 209,
+          "EndLine": 209,
+          "Code": {
+            "Lines": [
+              {
+                "Number": 207,
+                "Content": "  \"EndColumn\": 76,",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"EndColumn\": 76,",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 208,
+                "Content": "  \"Match\": \"********************\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Match\": \"********************\",",
+                "FirstCause": false,
+                "LastCause": false
+              },
+              {
+                "Number": 209,
+                "Content": "  \"Secret\": \"********************\",",
+                "IsCause": true,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"Secret\": \"********************\",",
+                "FirstCause": true,
+                "LastCause": true
+              },
+              {
+                "Number": 210,
+                "Content": "  \"File\": \"secretscanner-report.json\",",
+                "IsCause": false,
+                "Annotation": "",
+                "Truncated": false,
+                "Highlighted": "  \"File\": \"secretscanner-report.json\",",
+                "FirstCause": false,
+                "LastCause": false
+              }
+            ]
+          },
+          "Match": "  \"Secret\": \"********************\",",
+          "Layer": {
+            "DiffID": "sha256:017d6b06909b9601c9863f50084af8c37411b39906f6dfe2e8ecb80d09de5889",
+            "CreatedBy": "COPY dir:180329e477232285db0efd221487690e625709b9d8163dba9ce6f61459ddb003 in . "
+          },
+          "Offset": 8054
+        }
+      ]
+    }
+  ]
+}

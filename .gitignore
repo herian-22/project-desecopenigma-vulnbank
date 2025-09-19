@@ -10,3 +10,17 @@ trufflehog_report.json
 bandit-sast-report.json
 ZAP_2_9_0_unix.sh
 misconfig-report.json
+security-checker.sh
+misconfig-report.json
+bandit-sast-report.json
+gitleaks-report.json
+trivy-sca-report.json
+zap-api-report.json
+gitleaks.tar.gz
+image.tar
+trivy-report.txt
+trivy-report.json
+trivy-report.html
+zap-report.html
+zap-report.json
+zap-report.md

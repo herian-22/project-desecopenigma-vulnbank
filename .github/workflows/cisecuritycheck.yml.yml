@@ -191,6 +191,9 @@ jobs:
           # --- 3. Jalankan skrip (tanpa argumen) dan kirim hasilnya ---
           chmod +x scripts/generate_payload.sh
           JSON_PAYLOAD=$(scripts/generate_payload.sh)
+          echo "--- Generated JSON Payload ---"
+          echo "$JSON_PAYLOAD"
+          echo "------------------------------"
 
           curl -X POST -H "Content-Type: application/json" \
           -d "$JSON_PAYLOAD" \
@@ -233,7 +236,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Issue
-        uses: actions/create-issue@v2
+        uses: actions/create-issue@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "DevSecOps Pipeline Failure for commit ${{ github.sha }}"
