@@ -1,21 +1,10 @@
 #!/bin/bash
 # scripts/generate_payload.sh
 
-# Assign arguments to named variables
-PIPELINE_STATUS=$1
-REPO_NAME=$2
-RUN_URL=$3
-PIPELINE_COLOR=$4
-SECRET_SUMMARY=$5
-SAST_SUMMARY=$6
-CONTAINER_SUMMARY=$7
-MISCONFIG_SUMMARY=$8
-DAST_SUMMARY=$9
-COMMIT_SHA=${10}
-ACTOR=${11}
+# Skrip ini membaca variabel langsung dari environment
+# yang di-set oleh GitHub Actions workflow.
 
-# Create a JSON payload using a template
-# This method is safer than building the string manually
+# Membuat payload JSON menggunakan template.
 cat <<EOF
 {
   "username": "DevSecOps Bot",
@@ -51,6 +40,14 @@ cat <<EOF
         {
           "name": "📦 Container Scan (Trivy)",
           "value": "$CONTAINER_SUMMARY"
+        },
+        {
+          "name": "⚙️ Misconfig Scan (Trivy)",
+          "value": "$MISCONFIG_SUMMARY"
+        },
+        {
+          "name": "🌐 DAST (OWASP ZAP)",
+          "value": "$DAST_SUMMARY"
         }
       ],
       "footer": {

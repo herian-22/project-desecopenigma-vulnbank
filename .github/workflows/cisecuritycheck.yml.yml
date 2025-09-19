@@ -6,7 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-
 jobs:
   build:
     name: Build and Upload Docker Image
@@ -31,13 +30,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-      - name: Install Gitleaks
+      - name: Install and Run Gitleaks
         run: |
           wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz -O gitleaks.tar.gz
           tar -xzf gitleaks.tar.gz
           sudo mv gitleaks /usr/local/bin/
-      - name: Run Gitleaks Scan
-        run: gitleaks detect --report-path gitleaks-report.json --report-format json -v
+          gitleaks detect --report-path gitleaks-report.json --report-format json -v
         continue-on-error: true
       - uses: actions/upload-artifact@v4
         with: { name: gitleaks-report, path: gitleaks-report.json }
@@ -59,7 +57,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run Bandit Scan
-       
         run: pip install bandit && bandit -r . -f json -o bandit-report.json
         continue-on-error: false
       - uses: actions/upload-artifact@v4
@@ -85,14 +82,12 @@ jobs:
         with: { name: docker-image }
       - name: Load Docker image
         run: docker load -i image.tar
-      - name: Install Trivy
+      - name: Install and Run Trivy
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
-      - name: Run Trivy Scan
-
-        run: trivy image --format json --output trivy-report.json --severity CRITICAL,HIGH vuln-bank:${{ github.sha }}
+          trivy image --format json --output trivy-report.json --severity CRITICAL,HIGH vuln-bank:${{ github.sha }}
         continue-on-error: false
       - uses: actions/upload-artifact@v4
         with: { name: trivy-report, path: trivy-report.json }
@@ -113,13 +108,12 @@ jobs:
       summary: ${{ steps.parse_report.outputs.summary }}
     steps:
       - uses: actions/checkout@v4
-      - name: Install Trivy
+      - name: Install and Run Trivy Misconfig Scan
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
-      - name: Run Trivy Misconfiguration Scan
-        run: trivy config --format json --output misconfig-report.json .
+          trivy config --format json --output misconfig-report.json .
         continue-on-error: true
       - uses: actions/upload-artifact@v4
         with: { name: misconfig-report, path: misconfig-report.json }
@@ -166,7 +160,7 @@ jobs:
   notify:
     name: Send Scan Summary Notification
     runs-on: ubuntu-latest
-    if: always() 
+    if: always()
     needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
     steps:
       - name: Checkout Code
@@ -174,41 +168,37 @@ jobs:
 
       - name: Send Discord Webhook Notification
         run: |
-          chmod +x scripts/generate_payload.sh
-          PIPELINE_STATUS="Lolos"
-          PIPELINE_COLOR=3066993
-          if [ "${{ needs.secret_scan.result }}" == "failure" ] || \
-             [ "${{ needs.sast_scan.result }}" == "failure" ] || \
-             [ "${{ needs.container_scan.result }}" == "failure" ] || \
-             [ "${{ needs.dast.result }}" == "failure" ] || \
-             [ "${{ needs.misconfig_scan.result }}" == "failure" ]; then
-            PIPELINE_STATUS="Gagal"
-            PIPELINE_COLOR=15158332
+          # --- 1. Tentukan Status Pipeline dan ekspor sebagai variabel ---
+          if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
+            export PIPELINE_STATUS="Gagal ❌"
+            export PIPELINE_COLOR=15158332 # Merah
+          else
+            export PIPELINE_STATUS="Lolos ✅"
+            export PIPELINE_COLOR=3066993 # Hijau
           fi
+
+          # --- 2. Ekspor semua informasi lain sebagai environment variables ---
+          export REPO_NAME="${{ github.repository }}"
+          export RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          export SECRET_SUMMARY="${{ needs.secret_scan.outputs.summary }}"
+          export SAST_SUMMARY="${{ needs.sast_scan.outputs.summary }}"
+          export CONTAINER_SUMMARY="${{ needs.container_scan.outputs.summary }}"
+          export MISCONFIG_SUMMARY="${{ needs.misconfig_scan.outputs.summary }}"
+          export DAST_SUMMARY="${{ needs.dast.outputs.summary }}"
+          export COMMIT_SHA="${{ github.sha }}"
+          export ACTOR="${{ github.actor }}"
           
-          JSON_PAYLOAD=$(./scripts/generate_payload.sh \
-            "$PIPELINE_STATUS" \
-            "${{ github.repository }}" \
-            "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            "$PIPELINE_COLOR" \
-            "${{ needs.secret_scan.outputs.summary }}" \
-            "${{ needs.sast_scan.outputs.summary }}" \
-            "${{ needs.container_scan.outputs.summary }}" \
-            "${{ needs.misconfig_scan.outputs.summary }}" \
-            "${{ needs.dast.outputs.summary }}" \
-            "${{ github.sha }}" \
-            "${{ github.actor }}" \
-          )
-          
+          # --- 3. Jalankan skrip (tanpa argumen) dan kirim hasilnya ---
+          chmod +x scripts/generate_payload.sh
+          JSON_PAYLOAD=$(scripts/generate_payload.sh)
+
           curl -X POST -H "Content-Type: application/json" \
           -d "$JSON_PAYLOAD" \
           ${{ secrets.DISCORD_WEBHOOK_URL }}
 
- 
   create_issue:
     name: Create Issue on Failure
     runs-on: ubuntu-latest
-    
     if: failure()
     needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
     steps:
