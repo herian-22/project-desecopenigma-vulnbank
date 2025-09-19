@@ -1,27 +1,22 @@
 .env
 
 # Security Reports
+bandit-*.json
 gitleaks-report.json
-bandit-report.json
+misconfig-report.json
 secretscanner-report.json
-trivy-sca-report.json
-zap-api-report.json
-zap-api-report.html
 trufflehog_report.json
-bandit-sast-report.json
-ZAP_2_9_0_unix.sh
-misconfig-report.json
-security-checker.sh
-misconfig-report.json
-bandit-sast-report.json
-gitleaks-report.json
-trivy-sca-report.json
-zap-api-report.json
+trivy-*.json
+trivy-*.html
+trivy-*.txt
+zap-*.json
+zap-*.html
+zap-*.md
+
+# Archives and large files
 gitleaks.tar.gz
 image.tar
-trivy-report.txt
-trivy-report.json
-trivy-report.html
-zap-report.html
-zap-report.json
-zap-report.md
+
+# Scripts
+ZAP_2_9_0_unix.sh
+security-checker.sh
