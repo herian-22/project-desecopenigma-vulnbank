@@ -163,43 +163,49 @@ jobs:
     if: always()
     needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
       - name: Send Discord Webhook Notification
         run: |
-          # --- 1. Tentukan Status Pipeline dan ekspor sebagai variabel ---
+          PIPELINE_STATUS="Lolos ✅"
+          PIPELINE_COLOR=3066993
           if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
-            export PIPELINE_STATUS="Gagal ❌"
-            export PIPELINE_COLOR=15158332 # Merah
-          else
-            export PIPELINE_STATUS="Lolos ✅"
-            export PIPELINE_COLOR=3066993 # Hijau
+            PIPELINE_STATUS="Gagal ❌"
+            PIPELINE_COLOR=15158332
           fi
 
-          # --- 2. Ekspor semua informasi lain sebagai environment variables ---
-          export REPO_NAME="${{ github.repository }}"
-          export RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          export SECRET_SUMMARY="${{ needs.secret_scan.outputs.summary }}"
-          export SAST_SUMMARY="${{ needs.sast_scan.outputs.summary }}"
-          export CONTAINER_SUMMARY="${{ needs.container_scan.outputs.summary }}"
-          export MISCONFIG_SUMMARY="${{ needs.misconfig_scan.outputs.summary }}"
-          export DAST_SUMMARY="${{ needs.dast.outputs.summary }}"
-          export COMMIT_SHA="${{ github.sha }}"
-          export ACTOR="${{ github.actor }}"
-          
-          # --- 3. Jalankan skrip (tanpa argumen) dan kirim hasilnya ---
-          chmod +x scripts/generate_payload.sh
-          JSON_PAYLOAD=$(scripts/generate_payload.sh)
-          echo "--- Generated JSON Payload ---"
-          echo "$JSON_PAYLOAD"
-          echo "------------------------------"
+          JSON_PAYLOAD=$(jq -n \
+            --arg status "$PIPELINE_STATUS" \
+            --arg color "$PIPELINE_COLOR" \
+            --arg repo "${{ github.repository }}" \
+            --arg actor "${{ github.actor }}" \
+            --arg commit_sha "${{ github.sha }}" \
+            --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --arg secret_sum "${{ needs.secret_scan.outputs.summary }}" \
+            --arg sast_sum "${{ needs.sast_scan.outputs.summary }}" \
+            --arg container_sum "${{ needs.container_scan.outputs.summary }}" \
+            --arg misconfig_sum "${{ needs.misconfig_scan.outputs.summary }}" \
+            --arg dast_sum "${{ needs.dast.outputs.summary }}" \
+            '{
+              "username": "DevSecOps Bot",
+              "embeds": [{
+                "title": "Laporan Pipeline: " + $status,
+                "url": $run_url,
+                "color": ($color | tonumber),
+                "fields": [
+                  {"name": "Repository", "value": $repo, "inline": true},
+                  {"name": "Pemicu", "value": $actor, "inline": true},
+                  {"name": "Commit", "value": ("`" + $commit_sha + "`")},
+                  {"name": "🛡️ Secret Scan", "value": $secret_sum},
+                  {"name": "🔬 SAST", "value": $sast_sum},
+                  {"name": "📦 Container Scan", "value": $container_sum},
+                  {"name": "⚙️ Misconfig Scan", "value": $misconfig_sum},
+                  {"name": "🌐 DAST", "value": $dast_sum}
+                ]
+              }]
+            }')
 
-          curl -X POST -H "Content-Type: application/json" \
-          -d "$JSON_PAYLOAD" \
-          ${{ secrets.DISCORD_WEBHOOK_URL }}
+          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-create_issue:
+  create_issue:
     name: Create Issue with GitHub CLI
     runs-on: ubuntu-latest
     if: failure()
@@ -231,7 +237,6 @@ create_issue:
           ${{ needs.dast.outputs.summary }}
           EOF
           )
-          # Simpan body ke file untuk dibaca oleh GitHub CLI
           echo "$BODY" > issue-body.md
 
       - name: Create GitHub Issue using gh CLI
