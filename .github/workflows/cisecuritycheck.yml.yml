@@ -11,12 +11,17 @@ jobs:
     name: Build and Upload Docker Image
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Build Docker Image
         run: docker build -t vuln-bank:${{ github.sha }} .
+
       - name: Save Docker image
         run: docker save vuln-bank:${{ github.sha }} -o image.tar
-      - uses: actions/upload-artifact@v4
+
+      - name: Upload Docker image artifact
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: image.tar
@@ -28,8 +33,10 @@ jobs:
     outputs:
       summary: ${{ steps.parse_report.outputs.summary }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with: { fetch-depth: 0 }
+
       - name: Install and Run Gitleaks
         run: |
           wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz -O gitleaks.tar.gz
@@ -37,8 +44,13 @@ jobs:
           sudo mv gitleaks /usr/local/bin/
           gitleaks detect --report-path gitleaks-report.json --report-format json -v
         continue-on-error: true
-      - uses: actions/upload-artifact@v4
-        with: { name: gitleaks-report, path: gitleaks-report.json }
+
+      - name: Upload Gitleaks report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
+
       - name: Parse Gitleaks Report for Summary
         id: parse_report
         if: always()
@@ -55,12 +67,19 @@ jobs:
     outputs:
       summary: ${{ steps.parse_report.outputs.summary }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Run Bandit Scan
         run: pip install bandit && bandit -r . -f json -o bandit-report.json
-        continue-on-error: false
-      - uses: actions/upload-artifact@v4
-        with: { name: bandit-report, path: bandit-report.json }
+        continue-on-error: false # Fails the build on findings
+
+      - name: Upload Bandit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-report
+          path: bandit-report.json
+
       - name: Parse Bandit Report for Summary
         id: parse_report
         if: always()
@@ -77,20 +96,31 @@ jobs:
     outputs:
       summary: ${{ steps.parse_report.outputs.summary }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
-        with: { name: docker-image }
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
       - name: Load Docker image
         run: docker load -i image.tar
+
       - name: Install and Run Trivy
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
           trivy image --format json --output trivy-report.json --severity CRITICAL,HIGH vuln-bank:${{ github.sha }}
-        continue-on-error: false
-      - uses: actions/upload-artifact@v4
-        with: { name: trivy-report, path: trivy-report.json }
+        continue-on-error: false # Fails the build on findings
+
+      - name: Upload Trivy report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report
+          path: trivy-report.json
+
       - name: Parse Trivy Report for Summary
         id: parse_report
         if: always()
@@ -107,7 +137,9 @@ jobs:
     outputs:
       summary: ${{ steps.parse_report.outputs.summary }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Install and Run Trivy Misconfig Scan
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
@@ -115,8 +147,13 @@ jobs:
           sudo apt-get update && sudo apt-get install -y trivy
           trivy config --format json --output misconfig-report.json .
         continue-on-error: true
-      - uses: actions/upload-artifact@v4
-        with: { name: misconfig-report, path: misconfig-report.json }
+
+      - name: Upload Misconfig report
+        uses: actions/upload-artifact@v4
+        with:
+          name: misconfig-report
+          path: misconfig-report.json
+
       - name: Parse Trivy Misconfig Report for Summary
         id: parse_report
         if: always()
@@ -133,21 +170,25 @@ jobs:
     outputs:
       summary: ${{ steps.parse_zap_report.outputs.summary }}
     steps:
-      - uses: actions/checkout@v4
-      - name: Install Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose
-      - name: Run Application using Docker Compose
-        run: docker-compose up -d
-      - name: Set workspace permissions
-        run: sudo chmod -R 777 ${{ github.workspace }}
-      - name: Run ZAP Scan
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Application and ZAP Scan
         run: |
+          sudo apt-get update && sudo apt-get install -y docker-compose
+          docker-compose up -d
+          sudo chmod -R 777 ${{ github.workspace }}
           docker run --network host -v ${{ github.workspace }}:/zap/wrk/:rw \
-          ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
-          -t http://127.0.0.1:5000 -J zap-report.json -l PASS
+            ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://127.0.0.1:5000 -J zap-report.json -l PASS
         continue-on-error: true
-      - uses: actions/upload-artifact@v4
-        with: { name: zap-report, path: zap-report.json }
+
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: zap-report.json
+
       - name: Parse ZAP Report for Summary
         id: parse_zap_report
         if: always()
@@ -158,47 +199,54 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   notify:
-    - name: Send Discord Webhook Notification
-      run: |
-        PIPELINE_STATUS="Lolos ✅"
-        PIPELINE_COLOR=3066993
-        if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
-          PIPELINE_STATUS="Gagal ❌"
-          PIPELINE_COLOR=15158332
-        fi
+    name: Send Scan Summary Notification
+    runs-on: ubuntu-latest
+    if: always() # Selalu jalankan notifikasi, baik sukses maupun gagal
+    needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
+    steps:
+      - name: Install JQ
+        run: sudo apt-get update && sudo apt-get install -y jq
 
-        JSON_PAYLOAD=$(jq -n \
-          --arg status "$PIPELINE_STATUS" \
-          --arg color "$PIPELINE_COLOR" \
-          --arg repo "${{ github.repository }}" \
-          --arg actor "${{ github.actor }}" \
-          --arg commit_sha "${{ github.sha }}" \
-          --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-          --arg secret_sum "${{ needs.secret_scan.outputs.summary }}" \
-          --arg sast_sum "${{ needs.sast_scan.outputs.summary }}" \
-          --arg container_sum "${{ needs.container_scan.outputs.summary }}" \
-          --arg misconfig_sum "${{ needs.misconfig_scan.outputs.summary }}" \
-          --arg dast_sum "${{ needs.dast.outputs.summary }}" \
-          '{
-            "username": "DevSecOps Bot",
-            "embeds": [{
-              "title": ("Laporan Pipeline: \($status)"),
-              "url": $run_url,
-              "color": ($color | tonumber),
-              "fields": [
-                {"name": "Repository", "value": $repo, "inline": true},
-                {"name": "Pemicu", "value": $actor, "inline": true},
-                {"name": "Commit", "value": ("`" + $commit_sha + "`")},
-                {"name": "🛡️ Secret Scan", "value": $secret_sum},
-                {"name": "🔬 SAST", "value": $sast_sum},
-                {"name": "📦 Container Scan", "value": $container_sum},
-                {"name": "⚙️ Misconfig Scan", "value": $misconfig_sum},
-                {"name": "🌐 DAST", "value": $dast_sum}
+      - name: Send Discord Webhook Notification
+        run: |
+          PIPELINE_STATUS="Lolos ✅"
+          PIPELINE_COLOR=3066993 # Hijau
+          if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
+            PIPELINE_STATUS="Gagal ❌"
+            PIPELINE_COLOR=15158332 # Merah
+          fi
+
+          JSON_PAYLOAD=$(jq -n \
+            --arg status "$PIPELINE_STATUS" \
+            --arg color "$PIPELINE_COLOR" \
+            --arg repo "${{ github.repository }}" \
+            --arg actor "${{ github.actor }}" \
+            --arg commit_sha "${{ github.sha }}" \
+            --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            --arg secret_sum "${{ needs.secret_scan.outputs.summary }}" \
+            --arg sast_sum "${{ needs.sast_scan.outputs.summary }}" \
+            --arg container_sum "${{ needs.container_scan.outputs.summary }}" \
+            --arg misconfig_sum "${{ needs.misconfig_scan.outputs.summary }}" \
+            --arg dast_sum "${{ needs.dast.outputs.summary }}" \
+            '{
+              "username": "DevSecOps Bot",
+              "embeds": [{
+                "title": "Laporan Pipeline: " + $status,
+                "url": $run_url,
+                "color": ($color | tonumber),
+                "fields": [
+                  {"name": "Repository", "value": $repo, "inline": true},
+                  {"name": "Pemicu", "value": $actor, "inline": true},
+                  {"name": "Commit", "value": ("`" + $commit_sha + "`")},
+                  {"name": "🛡️ Secret Scan", "value": $secret_sum},
+                  {"name": "🔬 SAST", "value": $sast_sum},
+                  {"name": "📦 Container Scan", "value": $container_sum},
+                  {"name": "⚙️ Misconfig Scan", "value": $misconfig_sum},
+                  {"name": "🌐 DAST", "value": $dast_sum}
+                ],
+                "footer": { "text": "Pengecekan selesai" },
+                "timestamp": "'"$(date -u +'%Y-%m-%dT%H:%M:%SZ')"'"}
               ]
-            }]
-          }')
+            }')
 
-        curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }}
-
-
-
+          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }}
