@@ -204,9 +204,6 @@ jobs:
     if: always() # Selalu jalankan notifikasi, baik sukses maupun gagal
     needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Send Discord Webhook Notification
         env:
           # Pass all summaries and context as environment variables
@@ -235,3 +232,11 @@ jobs:
           # Generate payload and send it with curl
           JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
           curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
+
+  create-issue-on-failure:
+    name: Create Issue on Failure
+    runs-on: ubuntu-latest
+    if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
+    needs: [sast_scan, container_scan]
+    uses: ./.github/workflows/create-issue.yml
+    secrets: inherit
