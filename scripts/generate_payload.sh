@@ -1,63 +1,44 @@
 #!/bin/bash
-# scripts/generate_payload.sh
 
-# This script reads variables directly from the environment
-# set by the GitHub Actions workflow.
+# Script ini menggunakan jq untuk membuat payload JSON secara aman,
+# menghindari error akibat karakter khusus di dalam variabel.
 
-# Create the JSON payload using a heredoc. This is much cleaner
-# than trying to build it with jq and command-line arguments.
-cat <<EOF
-{
-  "username": "DevSecOps Bot",
-  "avatar_url": "https://i.imgur.com/fJc1mOa.png",
-  "embeds": [
-    {
-      "title": "DevSecOps Pipeline Status: $PIPELINE_STATUS",
-      "url": "$RUN_URL",
-      "color": $PIPELINE_COLOR,
+# Pastikan jq terinstal
+if ! command -v jq &> /dev/null
+then
+    echo "jq could not be found, attempting to install..." >&2
+    sudo apt-get update && sudo apt-get install -y jq
+fi
+
+# Gunakan jq untuk membuat JSON.
+# --arg flag akan menangani escaping secara otomatis.
+jq -n \
+  --arg status "$PIPELINE_STATUS" \
+  --arg color "$PIPELINE_COLOR" \
+  --arg repo "$REPO_NAME" \
+  --arg actor "$ACTOR" \
+  --arg commit_sha "$COMMIT_SHA" \
+  --arg run_url "$RUN_URL" \
+  --arg secret_sum "$SECRET_SUMMARY" \
+  --arg sast_sum "$SAST_SUMMARY" \
+  --arg container_sum "$CONTAINER_SUMMARY" \
+  --arg misconfig_sum "$MISCONFIG_SUMMARY" \
+  --arg dast_sum "$DAST_SUMMARY" \
+  '{
+    "username": "DevSecOps Bot",
+    "embeds": [{
+      "title": ("Laporan Pipeline: \($status)"),
+      "url": $run_url,
+      "color": ($color | tonumber),
       "fields": [
-        {
-          "name": "Repository",
-          "value": "$REPO_NAME",
-          "inline": true
-        },
-        {
-          "name": "Triggered by",
-          "value": "$ACTOR",
-          "inline": true
-        },
-        {
-          "name": "Commit",
-          "value": "\`$COMMIT_SHA\`"
-        },
-        {
-          "name": "🛡️ Secret Scan (Gitleaks)",
-          "value": "$SECRET_SUMMARY"
-        },
-        {
-          "name": "🔬 SAST (Bandit)",
-          "value": "$SAST_SUMMARY"
-        },
-        {
-          "name": "📦 Container Scan (Trivy)",
-          "value": "$CONTAINER_SUMMARY"
-        },
-        {
-          "name": "⚙️ Misconfig Scan (Trivy)",
-          "value": "$MISCONFIG_SUMMARY"
-        },
-        {
-          "name": "🌐 DAST (OWASP ZAP)",
-          "value": "$DAST_SUMMARY"
-        }
-      ],
-      "footer": {
-        "text": "Security scan results",
-        "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-      },
-      "timestamp": "$(date -u +'%Y-%m-%dT%H:%M:%S.000Z')"
-    }
-  ]
-}
-EOF
-
+        {"name": "Repository", "value": $repo, "inline": true},
+        {"name": "Pemicu", "value": $actor, "inline": true},
+        {"name": "Commit", "value": ("`" + $commit_sha[0:7] + "`")},
+        {"name": "🛡️ Secret Scan", "value": $secret_sum},
+        {"name": "🔬 SAST", "value": $sast_sum},
+        {"name": "📦 Container Scan", "value": $container_sum},
+        {"name": "⚙️ Misconfig Scan", "value": $misconfig_sum},
+        {"name": "🌐 DAST", "value": $dast_sum}
+      ]
+    }]
+  }'
