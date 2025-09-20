@@ -229,3 +229,40 @@ jobs:
             # Generate payload and send it with curl
             JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
             curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
+  create-issue-on-failure:
+      name: Create Issue on Failure
+      runs-on: ubuntu-latest
+      if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
+      needs: [sast_scan, container_scan]
+      permissions:
+        issues: write # Memberikan izin untuk membuat issue
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Create GitHub Issue on Failure
+          uses: actions/github-script@v6
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const { owner, repo } = context.repo;
+              const sastResult = "${{ needs.sast_scan.result }}";
+              const containerResult = "${{ needs.container_scan.result }}";
+              
+              let body = `Pipeline gagal karena adanya temuan keamanan. Mohon segera diperbaiki.\n\n`;
+              body += `**Ringkasan Pindaian:**\n`;
+              if (sastResult === 'failure') {
+                body += `- **SAST Scan**: Gagal ❌\n`;
+              }
+              if (containerResult === 'failure') {
+                body += `- **Container Scan**: Gagal ❌\n`;
+              }
+              body += `\n[Lihat detail run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+              
+              await github.rest.issues.create({
+                owner: owner,
+                repo: repo,
+                title: `⚠️ Security Scan Failure in commit ${{ github.sha }}`,
+                body: body,
+                labels: ['security', 'bug']
+              });
