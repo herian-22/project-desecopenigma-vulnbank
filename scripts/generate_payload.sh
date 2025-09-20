@@ -1,10 +1,11 @@
 #!/bin/bash
 # scripts/generate_payload.sh
 
-# Skrip ini membaca variabel langsung dari environment
-# yang di-set oleh GitHub Actions workflow.
+# This script reads variables directly from the environment
+# set by the GitHub Actions workflow.
 
-# Membuat payload JSON menggunakan template.
+# Create the JSON payload using a heredoc. This is much cleaner
+# than trying to build it with jq and command-line arguments.
 cat <<EOF
 {
   "username": "DevSecOps Bot",
@@ -13,7 +14,7 @@ cat <<EOF
     {
       "title": "DevSecOps Pipeline Status: $PIPELINE_STATUS",
       "url": "$RUN_URL",
-      "color": "$PIPELINE_COLOR",
+      "color": $PIPELINE_COLOR,
       "fields": [
         {
           "name": "Repository",
