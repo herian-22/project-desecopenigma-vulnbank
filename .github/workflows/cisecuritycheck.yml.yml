@@ -199,44 +199,33 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   notify:
-    name: Send Scan Summary Notification
-    runs-on: ubuntu-latest
-    if: always() # Selalu jalankan notifikasi, baik sukses maupun gagal
-    needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
-    steps:
-      - name: Send Discord Webhook Notification
-        env:
-          # Pass all summaries and context as environment variables
-          SECRET_SUMMARY: "${{ needs.secret_scan.outputs.summary }}"
-          SAST_SUMMARY: "${{ needs.sast_scan.outputs.summary }}"
-          CONTAINER_SUMMARY: "${{ needs.container_scan.outputs.summary }}"
-          MISCONFIG_SUMMARY: "${{ needs.misconfig_scan.outputs.summary }}"
-          DAST_SUMMARY: "${{ needs.dast.outputs.summary }}"
-          REPO_NAME: "${{ github.repository }}"
-          ACTOR: "${{ github.actor }}"
-          COMMIT_SHA: "${{ github.sha }}"
-          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-        run: |
-          PIPELINE_STATUS="Lolos ✅"
-          PIPELINE_COLOR=3066993 # Hijau
-          if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
-            PIPELINE_STATUS="Gagal ❌"
-            PIPELINE_COLOR=15158332 # Merah
-          fi
-          
-          # Export status and color so the script can see them
-          export PIPELINE_STATUS
-          export PIPELINE_COLOR
-          
-          # Generate payload and send it with curl
-          JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
-          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
-
-  create-issue-on-failure:
-    name: Create Issue on Failure
-    runs-on: ubuntu-latest
-    if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
-    needs: [sast_scan, container_scan]
-    uses: ./.github/workflows/create-issue.yml
-    secrets: inherit
+      name: Send Scan Summary Notification
+      runs-on: ubuntu-latest
+      if: always() # Selalu jalankan notifikasi, baik sukses maupun gagal
+      needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
+      steps:
+        - name: Send Discord Webhook Notification
+          env:
+            # Pass all summaries and context as environment variables
+            SECRET_SUMMARY: "${{ needs.secret_scan.outputs.summary }}"
+            SAST_SUMMARY: "${{ needs.sast_scan.outputs.summary }}"
+            CONTAINER_SUMMARY: "${{ needs.container_scan.outputs.summary }}"
+            MISCONFIG_SUMMARY: "${{ needs.misconfig_scan.outputs.summary }}"
+            DAST_SUMMARY: "${{ needs.dast.outputs.summary }}"
+            REPO_NAME: "${{ github.repository }}"
+            ACTOR: "${{ github.actor }}"
+            COMMIT_SHA: "${{ github.sha }}"
+            RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          run: |
+            if [[ "${{ needs.sast_scan.result }}" == "failure" || "${{ needs.container_scan.result }}" == "failure" ]]; then
+              export PIPELINE_STATUS="Gagal ❌"
+              export PIPELINE_COLOR=15158332 # Merah
+            else
+              export PIPELINE_STATUS="Lolos ✅"
+              export PIPELINE_COLOR=3066993 # Hijau
+            fi
+            
+            # Generate payload and send it with curl
+            JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
+            curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"

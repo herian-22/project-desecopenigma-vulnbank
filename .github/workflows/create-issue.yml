@@ -1,0 +1,9 @@
+create-issue-on-failure:
+    name: Create Issue on Failure
+    runs-on: ubuntu-latest
+    if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
+    needs: [sast_scan, container_scan]
+    permissions:
+      issues: write # Tambahkan izin ini
+    uses: ./.github/workflows/create-issue.yml
+    secrets: inherit
