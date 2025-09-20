@@ -199,8 +199,8 @@ jobs:
           -d "$JSON_PAYLOAD" \
           ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-  create_issue:
-    name: Create Issue on Failure
+create_issue:
+    name: Create Issue with GitHub CLI
     runs-on: ubuntu-latest
     if: failure()
     needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
@@ -231,14 +231,14 @@ jobs:
           ${{ needs.dast.outputs.summary }}
           EOF
           )
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "$BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          # Simpan body ke file untuk dibaca oleh GitHub CLI
+          echo "$BODY" > issue-body.md
 
-      - name: Create GitHub Issue
-        uses: actions/create-issue@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "DevSecOps Pipeline Failure for commit ${{ github.sha }}"
-          body: ${{ steps.issue_body.outputs.body }}
-          labels: security, bug
+      - name: Create GitHub Issue using gh CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "DevSecOps Pipeline Failure for commit ${{ github.sha }}" \
+            --body-file issue-body.md \
+            --label "security,bug"
