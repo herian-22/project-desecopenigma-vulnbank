@@ -158,92 +158,47 @@ jobs:
           echo 'EOF' >> $GITHUB_OUTPUT
 
   notify:
-    name: Send Scan Summary Notification
-    runs-on: ubuntu-latest
-    if: always()
-    needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
-    steps:
-      - name: Send Discord Webhook Notification
-        run: |
-          PIPELINE_STATUS="Lolos ✅"
-          PIPELINE_COLOR=3066993
-          if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
-            PIPELINE_STATUS="Gagal ❌"
-            PIPELINE_COLOR=15158332
-          fi
+    - name: Send Discord Webhook Notification
+      run: |
+        PIPELINE_STATUS="Lolos ✅"
+        PIPELINE_COLOR=3066993
+        if [ "${{ needs.sast_scan.result }}" == "failure" ] || [ "${{ needs.container_scan.result }}" == "failure" ]; then
+          PIPELINE_STATUS="Gagal ❌"
+          PIPELINE_COLOR=15158332
+        fi
 
-          JSON_PAYLOAD=$(jq -n \
-            --arg status "$PIPELINE_STATUS" \
-            --arg color "$PIPELINE_COLOR" \
-            --arg repo "${{ github.repository }}" \
-            --arg actor "${{ github.actor }}" \
-            --arg commit_sha "${{ github.sha }}" \
-            --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --arg secret_sum "${{ needs.secret_scan.outputs.summary }}" \
-            --arg sast_sum "${{ needs.sast_scan.outputs.summary }}" \
-            --arg container_sum "${{ needs.container_scan.outputs.summary }}" \
-            --arg misconfig_sum "${{ needs.misconfig_scan.outputs.summary }}" \
-            --arg dast_sum "${{ needs.dast.outputs.summary }}" \
-            '{
-              "username": "DevSecOps Bot",
-              "embeds": [{
-                "title": "Laporan Pipeline: " + $status,
-                "url": $run_url,
-                "color": ($color | tonumber),
-                "fields": [
-                  {"name": "Repository", "value": $repo, "inline": true},
-                  {"name": "Pemicu", "value": $actor, "inline": true},
-                  {"name": "Commit", "value": ("`" + $commit_sha + "`")},
-                  {"name": "🛡️ Secret Scan", "value": $secret_sum},
-                  {"name": "🔬 SAST", "value": $sast_sum},
-                  {"name": "📦 Container Scan", "value": $container_sum},
-                  {"name": "⚙️ Misconfig Scan", "value": $misconfig_sum},
-                  {"name": "🌐 DAST", "value": $dast_sum}
-                ]
-              }]
-            }')
+        JSON_PAYLOAD=$(jq -n \
+          --arg status "$PIPELINE_STATUS" \
+          --arg color "$PIPELINE_COLOR" \
+          --arg repo "${{ github.repository }}" \
+          --arg actor "${{ github.actor }}" \
+          --arg commit_sha "${{ github.sha }}" \
+          --arg run_url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+          --arg secret_sum "${{ needs.secret_scan.outputs.summary }}" \
+          --arg sast_sum "${{ needs.sast_scan.outputs.summary }}" \
+          --arg container_sum "${{ needs.container_scan.outputs.summary }}" \
+          --arg misconfig_sum "${{ needs.misconfig_scan.outputs.summary }}" \
+          --arg dast_sum "${{ needs.dast.outputs.summary }}" \
+          '{
+            "username": "DevSecOps Bot",
+            "embeds": [{
+              "title": ("Laporan Pipeline: \($status)"),
+              "url": $run_url,
+              "color": ($color | tonumber),
+              "fields": [
+                {"name": "Repository", "value": $repo, "inline": true},
+                {"name": "Pemicu", "value": $actor, "inline": true},
+                {"name": "Commit", "value": ("`" + $commit_sha + "`")},
+                {"name": "🛡️ Secret Scan", "value": $secret_sum},
+                {"name": "🔬 SAST", "value": $sast_sum},
+                {"name": "📦 Container Scan", "value": $container_sum},
+                {"name": "⚙️ Misconfig Scan", "value": $misconfig_sum},
+                {"name": "🌐 DAST", "value": $dast_sum}
+              ]
+            }]
+          }')
 
-          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }}
+        curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }}
 
-  create_issue:
-    name: Create Issue with GitHub CLI
-    runs-on: ubuntu-latest
-    if: failure()
-    needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
-    steps:
-      - name: Create Issue Body
-        id: issue_body
-        run: |
-          BODY=$(cat <<EOF
-          ### :warning: DevSecOps Pipeline Failure
-          A security scan has failed. Please review the findings below and address them.
-          **Repository:** ${{ github.repository }}
-          **Commit:** \`${{ github.sha }}\`
-          **Triggered by:** @${{ github.actor }}
-          ---
-          **Secret Scan (Gitleaks):**
-          ${{ needs.secret_scan.outputs.summary }}
-          ---
-          **SAST (Bandit):**
-          ${{ needs.sast_scan.outputs.summary }}
-          ---
-          **Container Scan (Trivy):**
-          ${{ needs.container_scan.outputs.summary }}
-          ---
-          **Misconfiguration Scan (Trivy):**
-          ${{ needs.misconfig_scan.outputs.summary }}
-          ---
-          **DAST (OWASP ZAP):**
-          ${{ needs.dast.outputs.summary }}
-          EOF
-          )
-          echo "$BODY" > issue-body.md
 
-      - name: Create GitHub Issue using gh CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh issue create \
-            --title "DevSecOps Pipeline Failure for commit ${{ github.sha }}" \
-            --body-file issue-body.md \
-            --label "security,bug"
+

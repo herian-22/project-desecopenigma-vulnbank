@@ -1,0 +1,39 @@
+# .github/workflows/create-issue.yml
+name: Create Issue on Failure
+
+on:
+  workflow_run:
+    workflows: ["cisecuritycheck.yml.yml"]  # harus sama persis dengan "name:" di file utama
+    types:
+      - completed
+
+jobs:
+  create_issue:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Write Issue Body
+        run: |
+          cat > issue-body.md <<'EOF'
+### :warning: DevSecOps Pipeline Failure
+Security scan failed in **cisecuritycheck.yml.yml** workflow.
+
+- **Repository:** ${{ github.repository }}
+- **Commit:** \`${{ github.sha }}\`
+- **Triggered by:** @${{ github.actor }}
+
+Please review pipeline logs for details.
+EOF
+
+      - name: Create GitHub Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue create \
+            --title "DevSecOps Pipeline Failure for commit ${{ github.sha }}" \
+            --body-file issue-body.md \
+            --label "security,bug"
