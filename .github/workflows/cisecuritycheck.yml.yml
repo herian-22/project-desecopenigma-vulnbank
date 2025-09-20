@@ -201,12 +201,15 @@ jobs:
   notify:
       name: Send Scan Summary Notification
       runs-on: ubuntu-latest
-      if: always() # Selalu jalankan notifikasi, baik sukses maupun gagal
+      if: always()
       needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
       steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
         - name: Send Discord Webhook Notification
           env:
-            # Pass all summaries and context as environment variables
+            # (env variables remain the same)
             SECRET_SUMMARY: "${{ needs.secret_scan.outputs.summary }}"
             SAST_SUMMARY: "${{ needs.sast_scan.outputs.summary }}"
             CONTAINER_SUMMARY: "${{ needs.container_scan.outputs.summary }}"
@@ -218,6 +221,7 @@ jobs:
             RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           run: |
+            # (run script remains the same)
             if [[ "${{ needs.sast_scan.result }}" == "failure" || "${{ needs.container_scan.result }}" == "failure" ]]; then
               export PIPELINE_STATUS="Gagal ❌"
               export PIPELINE_COLOR=15158332 # Merah
@@ -226,7 +230,6 @@ jobs:
               export PIPELINE_COLOR=3066993 # Hijau
             fi
             
-            # Generate payload and send it with curl
             JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
             curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
   create-issue-on-failure:
@@ -235,7 +238,7 @@ jobs:
       if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
       needs: [sast_scan, container_scan]
       permissions:
-        issues: write # Memberikan izin untuk membuat issue
+        issues: write
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
