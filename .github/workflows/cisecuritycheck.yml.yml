@@ -222,30 +222,36 @@ jobs:
           curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
 
   create-issue-on-failure:
-    name: Create Issue on Findings
-    runs-on: ubuntu-latest
-    if: needs.sast_scan.outputs.vulnerabilities_found == 'true' || needs.container_scan.outputs.vulnerabilities_found == 'true'
-    needs: [sast_scan, container_scan, ai_security_analysis]
-    permissions:
-      contents: read
-      issues: write
-    steps:
-      - name: Create GitHub Issue
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { owner, repo } = context.repo;
-            const aiAnalysis = `${{ needs.ai_security_analysis.outputs.summary }}`;
-            let body = `## ⚠️ Temuan Keamanan Terdeteksi\n\n`;
-            body += `Pipeline menemukan kerentanan keamanan yang memerlukan perhatian.\n\n`;
-            body += `### Ringkasan dan Analisis dari AI 🤖\n\n`;
-            body += aiAnalysis;
-            body += `\n\n[Lihat detail run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
-            await github.rest.issues.create({
-              owner: owner,
-              repo: repo,
-              title: `AI-Assisted Security Findings in commit ${{ github.sha }}`,
-              body: body,
-              labels: ['security', 'bug', 'ai-analyzed']
-            });
+      name: Create Issue on Findings
+      runs-on: ubuntu-latest
+      if: needs.sast_scan.outputs.vulnerabilities_found == 'true' || needs.container_scan.outputs.vulnerabilities_found == 'true'
+      needs: [sast_scan, container_scan, ai_security_analysis]
+      permissions:
+        contents: read
+        issues: write
+      steps:
+        - name: Create GitHub Issue
+          uses: actions/github-script@v6
+          # ▼▼▼ TAMBAHKAN BLOK 'env' INI ▼▼▼
+          env:
+            AI_ANALYSIS: ${{ needs.ai_security_analysis.outputs.summary }}
+          with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            script: |
+              const { owner, repo } = context.repo;
+              // ▼▼▼ BACA HASIL AI DARI ENVIRONMENT VARIABLE, BUKAN LANGSUNG DARI STRING ▼▼▼
+              const aiAnalysis = process.env.AI_ANALYSIS;
+              
+              let body = `## ⚠️ Temuan Keamanan Terdeteksi\n\n`;
+              body += `Pipeline menemukan kerentanan keamanan yang memerlukan perhatian.\n\n`;
+              body += `### Ringkasan dan Analisis dari AI 🤖\n\n`;
+              body += aiAnalysis;
+              body += `\n\n[Lihat detail run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+              
+              await github.rest.issues.create({
+                owner: owner,
+                repo: repo,
+                title: `AI-Assisted Security Findings in commit ${{ github.sha }}`,
+                body: body,
+                labels: ['security', 'bug', 'ai-analyzed']
+              });
