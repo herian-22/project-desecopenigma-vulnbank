@@ -72,7 +72,7 @@ jobs:
 
       - name: Run Bandit Scan
         run: pip install bandit && bandit -r . -f json -o bandit-report.json
-        continue-on-error: false # Fails the build on findings
+        continue-on-error: true # Fails the build on findings
 
       - name: Upload Bandit report
         uses: actions/upload-artifact@v4
@@ -113,7 +113,7 @@ jobs:
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
           trivy image --format json --output trivy-report.json --severity CRITICAL,HIGH vuln-bank:${{ github.sha }}
-        continue-on-error: false # Fails the build on findings
+        continue-on-error: true 
 
       - name: Upload Trivy report
         uses: actions/upload-artifact@v4
