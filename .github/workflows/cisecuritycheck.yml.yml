@@ -197,19 +197,67 @@ jobs:
           echo 'summary<<EOF' >> $GITHUB_OUTPUT
           echo "$SUMMARY" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
+  ai_security_analysis:
+    name: AI Security Analysis 🤖
+    runs-on: ubuntu-latest
+    if: always() 
+    needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
+    outputs:
+      summary: ${{ steps.analyze.outputs.summary }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      - name: Download all scan reports
+        uses: actions/download-artifact@v4
+        with:
+          path: reports 
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install google-generativeai
+
+      - name: Run AI Analysis
+        id: analyze
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
+        run: |
+          # Temukan path laporan yang benar di dalam direktori yang diunduh
+          GITLEAKS_REPORT=$(find reports/gitleaks-report -name gitleaks-report.json)
+          BANDIT_REPORT=$(find reports/bandit-report -name bandit-report.json)
+          TRIVY_REPORT=$(find reports/trivy-report -name trivy-report.json)
+          MISCONFIG_REPORT=$(find reports/misconfig-report -name misconfig-report.json)
+          ZAP_REPORT=$(find reports/zap-report -name zap-report.json)
+
+          # Jalankan skrip Python dengan semua path laporan sebagai argumen
+          AI_SUMMARY=$(python3 scripts/analyze.py \
+            --gitleaks "$GITLEAKS_REPORT" \
+            --bandit "$BANDIT_REPORT" \
+            --trivy "$TRIVY_REPORT" \
+            --misconfig "$MISCONFIG_REPORT" \
+            --dast "$ZAP_REPORT")
+
+          # Simpan ringkasan dari AI sebagai output untuk job selanjutnya
+          echo 'summary<<EOF' >> $GITHUB_OUTPUT
+          echo "$AI_SUMMARY" >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
   notify:
       name: Send Scan Summary Notification
       runs-on: ubuntu-latest
       if: always()
-      needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
+      
+      needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast, ai_security_analysis]
       steps:
         - name: Checkout repository
           uses: actions/checkout@v4
 
         - name: Send Discord Webhook Notification
           env:
-            # (env variables remain the same)
+           
             SECRET_SUMMARY: "${{ needs.secret_scan.outputs.summary }}"
             SAST_SUMMARY: "${{ needs.sast_scan.outputs.summary }}"
             CONTAINER_SUMMARY: "${{ needs.container_scan.outputs.summary }}"
@@ -220,8 +268,11 @@ jobs:
             COMMIT_SHA: "${{ github.sha }}"
             RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+            
+            
+            AI_SUMMARY: "${{ needs.ai_security_analysis.outputs.summary }}"
+
           run: |
-            # (run script remains the same)
             if [[ "${{ needs.sast_scan.result }}" == "failure" || "${{ needs.container_scan.result }}" == "failure" ]]; then
               export PIPELINE_STATUS="Gagal ❌"
               export PIPELINE_COLOR=15158332 # Merah
@@ -230,43 +281,40 @@ jobs:
               export PIPELINE_COLOR=3066993 # Hijau
             fi
             
+            # Pastikan skrip `generate_payload.sh` Anda diupdate untuk menggunakan variabel $AI_SUMMARY
             JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
             curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
+
   create-issue-on-failure:
     name: Create Issue on Failure
     runs-on: ubuntu-latest
     if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
-    needs: [sast_scan, container_scan]
+    
+    needs: [sast_scan, container_scan, ai_security_analysis]
     permissions:
-      contents: read   
+      contents: read
       issues: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Create GitHub Issue on Failure
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            const sastResult = "${{ needs.sast_scan.result }}";
-            const containerResult = "${{ needs.container_scan.result }}";
+            // Dapatkan analisis dari AI
+            const aiAnalysis = `${{ needs.ai_security_analysis.outputs.summary }}`;
             
-            let body = `Pipeline gagal karena adanya temuan keamanan. Mohon segera diperbaiki.\n\n`;
-            body += `**Ringkasan Pindaian:**\n`;
-            if (sastResult === 'failure') {
-              body += `- **SAST Scan**: Gagal ❌\n`;
-            }
-            if (containerResult === 'failure') {
-              body += `- **Container Scan**: Gagal ❌\n`;
-            }
-            body += `\n[Lihat detail run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
+            // Buat body issue yang jauh lebih informatif dengan hasil AI
+            let body = `## ⚠️ Kegagalan Pipeline Keamanan\n\n`;
+            body += `Pipeline gagal karena adanya temuan keamanan dengan tingkat keparahan tinggi. Mohon segera diperbaiki.\n\n`;
+            body += `### Ringkasan dan Analisis dari AI 🤖\n\n`;
+            body += aiAnalysis; // Masukkan seluruh analisis AI ke body issue
+            body += `\n\n[Lihat detail run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
             
             await github.rest.issues.create({
               owner: owner,
               repo: repo,
-              title: `⚠️ Security Scan Failure in commit ${{ github.sha }}`,
+              title: `AI-Assisted Security Failure in commit ${{ github.sha }}`,
               body: body,
-              labels: ['security', 'bug']
+              labels: ['security', 'bug', 'ai-analyzed']
             });
