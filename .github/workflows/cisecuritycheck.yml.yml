@@ -30,13 +30,10 @@ jobs:
     name: Secret Scanning (Gitleaks)
     runs-on: ubuntu-latest
     needs: build
-    outputs:
-      summary: ${{ steps.parse_report.outputs.summary }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with: { fetch-depth: 0 }
-
       - name: Install and Run Gitleaks
         run: |
           wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.2/gitleaks_8.18.2_linux_x64.tar.gz -O gitleaks.tar.gz
@@ -44,102 +41,81 @@ jobs:
           sudo mv gitleaks /usr/local/bin/
           gitleaks detect --report-path gitleaks-report.json --report-format json -v
         continue-on-error: true
-
       - name: Upload Gitleaks report
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-report
           path: gitleaks-report.json
 
-      - name: Parse Gitleaks Report for Summary
-        id: parse_report
-        if: always()
-        run: |
-          SUMMARY=$(python3 scripts/parse_reports.py gitleaks gitleaks-report.json)
-          echo 'summary<<EOF' >> $GITHUB_OUTPUT
-          echo "$SUMMARY" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-
   sast_scan:
     name: SAST (Bandit)
     runs-on: ubuntu-latest
     needs: build
     outputs:
-      summary: ${{ steps.parse_report.outputs.summary }}
+      vulnerabilities_found: ${{ steps.bandit_check.outputs.findings }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Run Bandit Scan
-        run: pip install bandit && bandit -r . -f json -o bandit-report.json
-        continue-on-error: true # Fails the build on findings
-
+      - name: Run Bandit Scan and Check for Findings
+        id: bandit_check
+        run: |
+          pip install bandit
+          bandit -r . -f json -o bandit-report.json || exit_code=$?
+          if [[ -n "$exit_code" && "$exit_code" -ne 0 ]]; then
+            echo "Temuan SAST terdeteksi."
+            echo "findings=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tidak ada temuan SAST."
+            echo "findings=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
       - name: Upload Bandit report
         uses: actions/upload-artifact@v4
         with:
           name: bandit-report
           path: bandit-report.json
 
-      - name: Parse Bandit Report for Summary
-        id: parse_report
-        if: always()
-        run: |
-          SUMMARY=$(python3 scripts/parse_reports.py bandit bandit-report.json)
-          echo 'summary<<EOF' >> $GITHUB_OUTPUT
-          echo "$SUMMARY" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-
   container_scan:
     name: Container Scanning (Trivy)
     runs-on: ubuntu-latest
     needs: build
     outputs:
-      summary: ${{ steps.parse_report.outputs.summary }}
+      vulnerabilities_found: ${{ steps.trivy_check.outputs.findings }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Download Docker image artifact
         uses: actions/download-artifact@v4
         with:
           name: docker-image
-
       - name: Load Docker image
         run: docker load -i image.tar
-
-      - name: Install and Run Trivy
+      - name: Install, Run Trivy, and Check for Findings
+        id: trivy_check
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
           echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
           sudo apt-get update && sudo apt-get install -y trivy
-          trivy image --format json --output trivy-report.json --severity CRITICAL,HIGH vuln-bank:${{ github.sha }}
-        continue-on-error: true 
-
+          trivy image --format json --output trivy-report.json --severity CRITICAL,HIGH --exit-code 1 vuln-bank:${{ github.sha }} || exit_code=$?
+          if [[ -n "$exit_code" && "$exit_code" -ne 0 ]]; then
+            echo "Temuan kontainer terdeteksi."
+            echo "findings=true" >> $GITHUB_OUTPUT
+          else
+            echo "Tidak ada temuan kontainer."
+            echo "findings=false" >> $GITHUB_OUTPUT
+          fi
+        continue-on-error: true
       - name: Upload Trivy report
         uses: actions/upload-artifact@v4
         with:
           name: trivy-report
           path: trivy-report.json
 
-      - name: Parse Trivy Report for Summary
-        id: parse_report
-        if: always()
-        run: |
-          SUMMARY=$(python3 scripts/parse_reports.py trivy trivy-report.json)
-          echo 'summary<<EOF' >> $GITHUB_OUTPUT
-          echo "$SUMMARY" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-
   misconfig_scan:
     name: Misconfiguration Scanning (Trivy)
     runs-on: ubuntu-latest
     needs: build
-    outputs:
-      summary: ${{ steps.parse_report.outputs.summary }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Install and Run Trivy Misconfig Scan
         run: |
           wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
@@ -147,32 +123,19 @@ jobs:
           sudo apt-get update && sudo apt-get install -y trivy
           trivy config --format json --output misconfig-report.json .
         continue-on-error: true
-
       - name: Upload Misconfig report
         uses: actions/upload-artifact@v4
         with:
           name: misconfig-report
           path: misconfig-report.json
 
-      - name: Parse Trivy Misconfig Report for Summary
-        id: parse_report
-        if: always()
-        run: |
-          SUMMARY=$(python3 scripts/parse_reports.py trivy-misconfig misconfig-report.json)
-          echo 'summary<<EOF' >> $GITHUB_OUTPUT
-          echo "$SUMMARY" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
-
   dast:
     name: DAST (OWASP ZAP)
     runs-on: ubuntu-latest
     needs: build
-    outputs:
-      summary: ${{ steps.parse_zap_report.outputs.summary }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Run Application and ZAP Scan
         run: |
           sudo apt-get update && sudo apt-get install -y docker-compose
@@ -182,139 +145,107 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
             -t http://127.0.0.1:5000 -J zap-report.json -l PASS
         continue-on-error: true
-
       - name: Upload ZAP report
         uses: actions/upload-artifact@v4
         with:
           name: zap-report
           path: zap-report.json
 
-      - name: Parse ZAP Report for Summary
-        id: parse_zap_report
-        if: always()
-        run: |
-          SUMMARY=$(python3 scripts/parse_reports.py zap zap-report.json)
-          echo 'summary<<EOF' >> $GITHUB_OUTPUT
-          echo "$SUMMARY" >> $GITHUB_OUTPUT
-          echo 'EOF' >> $GITHUB_OUTPUT
   ai_security_analysis:
     name: AI Security Analysis 🤖
     runs-on: ubuntu-latest
-    if: always() 
+    if: always()
     needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast]
     outputs:
       summary: ${{ steps.analyze.outputs.summary }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Download all scan reports
         uses: actions/download-artifact@v4
         with:
-          path: reports 
-
+          path: reports
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-
       - name: Install dependencies
         run: pip install google-generativeai
-
       - name: Run AI Analysis
         id: analyze
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }} 
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          # Temukan path laporan yang benar di dalam direktori yang diunduh
           GITLEAKS_REPORT=$(find reports/gitleaks-report -name gitleaks-report.json)
           BANDIT_REPORT=$(find reports/bandit-report -name bandit-report.json)
           TRIVY_REPORT=$(find reports/trivy-report -name trivy-report.json)
           MISCONFIG_REPORT=$(find reports/misconfig-report -name misconfig-report.json)
           ZAP_REPORT=$(find reports/zap-report -name zap-report.json)
-
-          # Jalankan skrip Python dengan semua path laporan sebagai argumen
           AI_SUMMARY=$(python3 scripts/analyze.py \
             --gitleaks "$GITLEAKS_REPORT" \
             --bandit "$BANDIT_REPORT" \
             --trivy "$TRIVY_REPORT" \
             --misconfig "$MISCONFIG_REPORT" \
             --dast "$ZAP_REPORT")
-
-          # Simpan ringkasan dari AI sebagai output untuk job selanjutnya
           echo 'summary<<EOF' >> $GITHUB_OUTPUT
           echo "$AI_SUMMARY" >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
+
   notify:
-      name: Send Scan Summary Notification
-      runs-on: ubuntu-latest
-      if: always()
-      
-      needs: [secret_scan, sast_scan, container_scan, misconfig_scan, dast, ai_security_analysis]
-      steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-
-        - name: Send Discord Webhook Notification
-          env:
-           
-            SECRET_SUMMARY: "${{ needs.secret_scan.outputs.summary }}"
-            SAST_SUMMARY: "${{ needs.sast_scan.outputs.summary }}"
-            CONTAINER_SUMMARY: "${{ needs.container_scan.outputs.summary }}"
-            MISCONFIG_SUMMARY: "${{ needs.misconfig_scan.outputs.summary }}"
-            DAST_SUMMARY: "${{ needs.dast.outputs.summary }}"
-            REPO_NAME: "${{ github.repository }}"
-            ACTOR: "${{ github.actor }}"
-            COMMIT_SHA: "${{ github.sha }}"
-            RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-            
-            
-            AI_SUMMARY: "${{ needs.ai_security_analysis.outputs.summary }}"
-
-          run: |
-            if [[ "${{ needs.sast_scan.result }}" == "failure" || "${{ needs.container_scan.result }}" == "failure" ]]; then
-              export PIPELINE_STATUS="Gagal ❌"
-              export PIPELINE_COLOR=15158332 # Merah
-            else
-              export PIPELINE_STATUS="Lolos ✅"
-              export PIPELINE_COLOR=3066993 # Hijau
-            fi
-            
-            # Pastikan skrip `generate_payload.sh` Anda diupdate untuk menggunakan variabel $AI_SUMMARY
-            JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
-            curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
+    name: Send Scan Summary Notification
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [sast_scan, container_scan, ai_security_analysis]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Send Discord Webhook Notification
+        env:
+          SAST_FINDINGS: "${{ needs.sast_scan.outputs.vulnerabilities_found }}"
+          CONTAINER_FINDINGS: "${{ needs.container_scan.outputs.vulnerabilities_found }}"
+          AI_SUMMARY: "${{ needs.ai_security_analysis.outputs.summary }}"
+          REPO_NAME: "${{ github.repository }}"
+          ACTOR: "${{ github.actor }}"
+          COMMIT_SHA: "${{ github.sha }}"
+          RUN_URL: "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          if [[ "$SAST_FINDINGS" == "true" || "$CONTAINER_FINDINGS" == "true" ]]; then
+            export PIPELINE_STATUS="Gagal ❌ (Ada Temuan Kritis)"
+            export PIPELINE_COLOR=15158332 # Merah
+          else
+            export PIPELINE_STATUS="Lolos ✅"
+            export PIPELINE_COLOR=3066993 # Hijau
+          fi
+          # Pastikan skrip `generate_payload.sh` Anda diupdate untuk menggunakan variabel env yang baru
+          JSON_PAYLOAD=$(bash scripts/generate_payload.sh)
+          curl -X POST -H "Content-Type: application/json" -d "$JSON_PAYLOAD" "$DISCORD_WEBHOOK_URL"
 
   create-issue-on-failure:
-    name: Create Issue on Failure
+    name: Create Issue on Findings
     runs-on: ubuntu-latest
-    if: failure() && (needs.sast_scan.result == 'failure' || needs.container_scan.result == 'failure')
-    
+    if: needs.sast_scan.outputs.vulnerabilities_found == 'true' || needs.container_scan.outputs.vulnerabilities_found == 'true'
     needs: [sast_scan, container_scan, ai_security_analysis]
     permissions:
       contents: read
       issues: write
     steps:
-      - name: Create GitHub Issue on Failure
+      - name: Create GitHub Issue
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const { owner, repo } = context.repo;
-            // Dapatkan analisis dari AI
             const aiAnalysis = `${{ needs.ai_security_analysis.outputs.summary }}`;
-            
-            // Buat body issue yang jauh lebih informatif dengan hasil AI
-            let body = `## ⚠️ Kegagalan Pipeline Keamanan\n\n`;
-            body += `Pipeline gagal karena adanya temuan keamanan dengan tingkat keparahan tinggi. Mohon segera diperbaiki.\n\n`;
+            let body = `## ⚠️ Temuan Keamanan Terdeteksi\n\n`;
+            body += `Pipeline menemukan kerentanan keamanan yang memerlukan perhatian.\n\n`;
             body += `### Ringkasan dan Analisis dari AI 🤖\n\n`;
-            body += aiAnalysis; // Masukkan seluruh analisis AI ke body issue
+            body += aiAnalysis;
             body += `\n\n[Lihat detail run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n`;
-            
             await github.rest.issues.create({
               owner: owner,
               repo: repo,
-              title: `AI-Assisted Security Failure in commit ${{ github.sha }}`,
+              title: `AI-Assisted Security Findings in commit ${{ github.sha }}`,
               body: body,
               labels: ['security', 'bug', 'ai-analyzed']
             });

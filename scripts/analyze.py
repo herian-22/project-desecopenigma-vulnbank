@@ -19,7 +19,7 @@ def read_json_file(file_path):
         return None
     return None
 
-# --- FUNGSI BARU UNTUK MERINGKAS LAPORAN ---
+# --- FUNGSI UNTUK MERINGKAS LAPORAN ---
 
 def summarize_trivy(data, report_type="Container"):
     """Meringkas laporan Trivy, hanya mengambil temuan CRITICAL dan HIGH."""
@@ -52,7 +52,7 @@ def summarize_bandit(data):
     
 def summarize_simple_list(data, tool_name):
     """Meringkas laporan sederhana berbentuk list seperti Gitleaks."""
-    if not data or not isinstance(data, list):
+    if not data or not isinstance(data, list) or len(data) == 0:
         return ""
     summary = f"\n\n--- {tool_name} Scan Summary ---\n"
     for finding in data:
@@ -68,11 +68,9 @@ def main():
     parser.add_argument("--dast", help="Path to ZAP DAST report JSON")
     args = parser.parse_args()
 
-    # --- MEMBUAT PROMPT DARI RINGKASAN, BUKAN DATA MENTAH ---
-    
     prompt = """
     Anda adalah seorang ahli DevSecOps senior. Analisis ringkasan temuan keamanan berikut.
-    Berikan ringkasan eksekutif, identifikasi 3 risiko paling kritis, dan berikan rekomendasi perbaikan spesifik untuk setiap risiko tersebut.
+    Berikan ringkasan eksekutif, identifikasi 3 risiko paling kritis dari gabungan semua laporan, dan berikan rekomendasi perbaikan spesifik untuk setiap risiko tersebut.
     Gunakan format Markdown yang jelas.
 
     Berikut adalah ringkasan temuannya:
@@ -89,14 +87,14 @@ def main():
     prompt += summarize_trivy(trivy_data, "Container")
 
     misconfig_data = read_json_file(args.misconfig)
-    prompt += summarize_trivy(misconfig_data, "Misconfiguration") # Formatnya mirip Trivy
-
+    prompt += summarize_trivy(misconfig_data, "Misconfiguration") 
+    
     # Jika tidak ada temuan sama sekali setelah diringkas
     if len(prompt.strip()) < 250:
-        print("Tidak ada temuan keamanan dengan tingkat keparahan tinggi. Kerja bagus! ✅")
+        print("Tidak ada temuan keamanan dengan tingkat keparahan tinggi dari hasil pemindaian. Kerja bagus! ✅")
         return
 
-    # Kirim prompt yang JAUH LEBIH KECIL ke Gemini API
+    # Kirim prompt yang sudah diringkas ke Gemini API
     model = genai.GenerativeModel('gemini-1.5-flash')
     response = model.generate_content(prompt)
 
