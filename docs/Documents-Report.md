@@ -39,7 +39,9 @@ Pipeline ini mencakup lima pilar pemindaian keamanan:
 
 ## 2. Struktur dan Alur Kerja (Workflow)
 
-Alur kerja pipeline didefinisikan dalam file `.github/workflows/devsecops_pipeline.yml` dan terdiri dari beberapa tahapan (*jobs*) yang dieksekusi secara berurutan dan paralel.
+Alur kerja pipeline didefinisikan dalam file `.github/workflows/cisecuritycheck.yml.yml` dan terdiri dari beberapa tahapan (*jobs*) yang dieksekusi secara berurutan dan paralel.
+  
+  ![User Interface](roadmap.jpg)
 
 ### Pemicu (Trigger)
 Pipeline dieksekusi secara otomatis setiap kali ada event `push` ke branch `main`, atau dapat dipicu secara manual melalui `workflow_dispatch`.
