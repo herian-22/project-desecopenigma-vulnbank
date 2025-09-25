@@ -1,6 +1,6 @@
 # Dokumentasi Pipeline DevSecOps
 
-Dokumen ini memberikan rincian teknis mengenai arsitektur dan alur kerja dari pipeline *Continuous Integration/Continuous Security* (CI/CS) yang diimplementasikan untuk aplikasi Vuln-Bank. Pipeline ini dirancang untuk mengotomatiskan serangkaian pemindaian keamanan secara sistematis pada setiap perubahan kode.
+Dokumen ini memberikan rincian teknis mengenai arsitektur dan alur kerja dari pipeline pipeline DevSecOps yang diimplementasikan untuk aplikasi Vuln-Bank. Pipeline ini dirancang untuk mengotomatiskan serangkaian pemindaian keamanan secara sistematis pada setiap perubahan kode.
 
 ## Daftar Isi
 
