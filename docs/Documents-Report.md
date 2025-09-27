@@ -153,6 +153,7 @@ curl -X POST -H "Content-Type: application/json" \
   -d "$JSON_PAYLOAD" \
   ${{ secrets.DISCORD_WEBHOOK_URL }}
 ```
+ ![User Interface](notif.jpg)
 ## 5. Hasil Laporan dan Kode Rentan
 Berikut adalah  notifikasi yang akan dikirim ke Discord, beserta cuplikan kode rentan yang sesuai dengan temuan tersebut.
 ### Laporan Ringkasan DevSecOps Pipeline
